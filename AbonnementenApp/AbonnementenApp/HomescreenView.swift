@@ -1,0 +1,537 @@
+//
+//  HomescreenView.swift
+//  AbonnementenApp
+//
+//  Created by Batiste Vancoillie on 30/09/2025.
+//
+import SwiftUI
+
+// MARK: - Theme
+private struct Theme {
+    // Logo primary: deep teal
+    static let primary = Color(hex: "#0F5A55")
+    // Accent for highlights (coin/check vibe)
+    static let accent  = Color(hex: "#00B894")
+    // Warm highlight for money focus
+    static let amber   = Color(hex: "#FFC857")
+    // Subtle surfaces
+    static let surface = Color(hex: "#F4F6F6")
+}
+
+private extension Color {
+    init(hex: String) {
+        let r, g, b, a: Double
+        var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if hexString.hasPrefix("#") { hexString.removeFirst() }
+        var value: UInt64 = 0
+        Scanner(string: hexString).scanHexInt64(&value)
+        switch hexString.count {
+        case 6:
+            r = Double((value & 0xFF0000) >> 16) / 255
+            g = Double((value & 0x00FF00) >> 8) / 255
+            b = Double( value & 0x0000FF) / 255
+            a = 1.0
+        case 8:
+            r = Double((value & 0xFF000000) >> 24) / 255
+            g = Double((value & 0x00FF0000) >> 16) / 255
+            b = Double((value & 0x0000FF00) >> 8) / 255
+            a = Double( value & 0x000000FF) / 255
+        default:
+            r = 0.0; g = 0.0; b = 0.0; a = 1.0
+        }
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: a)
+    }
+}
+
+struct HomescreenView: View {
+    // MARK: - Types
+    enum Periode: String, CaseIterable, Identifiable { case maand = "Maand", jaar = "Jaar"; var id: String { rawValue } }
+    enum Frequentie: String, CaseIterable { case wekelijks, maandelijks, driemaandelijks, jaarlijks }
+
+    struct Abonnement: Identifiable {
+        // NOTE: `id` is immutable (new UUID) — editing will result in a new identity unless promoted to `var`.
+        let id = UUID()
+        var naam: String
+        var prijs: Double // prijs per periode van `frequentie`
+        var frequentie: Frequentie
+        var volgendeVervaldatum: Date
+        var categorie: String
+        var opzegbaar: Bool
+        var notitie: String?
+
+        // Genormaliseerde bedragen
+        var maandBedrag: Double {
+            switch frequentie {
+            case .wekelijks: return prijs * 52.0 / 12.0
+            case .maandelijks: return prijs
+            case .driemaandelijks: return prijs / 3.0
+            case .jaarlijks: return prijs / 12.0
+            }
+        }
+        var jaarBedrag: Double {
+            switch frequentie {
+            case .wekelijks: return prijs * 52.0
+            case .maandelijks: return prijs * 12.0
+            case .driemaandelijks: return prijs * 4.0
+            case .jaarlijks: return prijs
+            }
+        }
+
+        var dagenTotVervaldatum: Int { Calendar.current.dateComponents([.day], from: Date(), to: volgendeVervaldatum).day ?? 0 }
+        var isBinnen30Dagen: Bool { dagenTotVervaldatum >= 0 && dagenTotVervaldatum <= 30 }
+        var isVandaag: Bool { Calendar.current.isDateInToday(volgendeVervaldatum) }
+
+        func volgendeVervaldatumNaHuidige() -> Date {
+            let cal = Calendar.current
+            switch frequentie {
+            case .wekelijks:
+                return cal.date(byAdding: .weekOfYear, value: 1, to: volgendeVervaldatum) ?? volgendeVervaldatum
+            case .maandelijks:
+                return cal.date(byAdding: .month, value: 1, to: volgendeVervaldatum) ?? volgendeVervaldatum
+            case .driemaandelijks:
+                return cal.date(byAdding: .month, value: 3, to: volgendeVervaldatum) ?? volgendeVervaldatum
+            case .jaarlijks:
+                return cal.date(byAdding: .year, value: 1, to: volgendeVervaldatum) ?? volgendeVervaldatum
+            }
+        }
+    }
+
+    // MARK: - State
+    @State private var periode: Periode = .maand
+    @State private var zoektekst: String = ""
+    @State private var abonnementen: [Abonnement] = Mock.abonnementen
+    @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
+    @AppStorage("appTheme") private var appTheme: String = "system"
+
+    // Add/Edit state
+    @State private var isPresentingAddEdit = false
+    @State private var editingID: UUID? = nil
+    // Delete confirmation state
+    @State private var pendingDelete: Abonnement? = nil
+    @State private var showDeleteAlert: Bool = false
+
+    // Draft model used in the Add/Edit sheet
+    private struct Draft {
+        var naam: String = ""
+        var prijs: Double = 0
+        var frequentie: Frequentie = .maandelijks
+        var volgendeVervaldatum: Date = Date()
+        var categorie: String = "Overig"
+        var opzegbaar: Bool = true
+        var notitie: String? = nil
+    }
+    @State private var draft = Draft()
+    // Tekstveld voor prijs met placeholder (voorkomt standaard "0")
+    @State private var prijsText: String = ""
+
+    // Wordt beheerd in Instellingen en geladen uit UserDefaults
+    @State private var categorieen: [String] = CategoriesDefaults.load()
+
+    private var isEditing: Bool { editingID != nil }
+    
+    private var preferredScheme: ColorScheme? {
+        switch appTheme {
+        case "light": return .light
+        case "dark":  return .dark
+        default:      return nil // system
+        }
+    }
+
+    // MARK: - Body
+    var body: some View {
+        NavigationStack {
+            // App-wide tint on this screen
+            let _ = ()
+            List {
+                headerKPISection
+                if !binnenkortLeeg {
+                    upcomingSection
+                }
+                volledigeLijstSection
+            }
+            .listStyle(.insetGrouped)
+            .navigationTitle("Overzicht")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink { instellingenView() } label: { Image(systemName: "gearshape").foregroundStyle(Theme.primary) }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { openAdd() } label: { Label("Toevoegen", systemImage: "plus.circle.fill").foregroundStyle(Theme.primary) }
+                }
+            }
+            .searchable(text: $zoektekst, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
+            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in
+                categorieen = CategoriesDefaults.load()
+            }
+            .preferredColorScheme(preferredScheme)
+            .tint(Theme.primary)
+            .sheet(isPresented: $isPresentingAddEdit) {
+                NavigationStack {
+                    Form {
+                        Section {
+                            TextField("Naam", text: $draft.naam, prompt: Text("Naam van abonnement (bv. Netflix)"))
+
+                            Picker("Categorie", selection: $draft.categorie) {
+                                ForEach(categorieen, id: \.self) { cat in
+                                    Text(cat).tag(cat)
+                                }
+                            }
+                            .pickerStyle(.navigationLink)
+
+                            TextField("Prijs", text: $prijsText, prompt: Text("Prijs (bv. 12,99)"))
+                                .keyboardType(.decimalPad)
+
+                            Picker("Frequentie", selection: $draft.frequentie) {
+                                Text("Wekelijks").tag(Frequentie.wekelijks)
+                                Text("Maandelijks").tag(Frequentie.maandelijks)
+                                Text("Driemaandelijks").tag(Frequentie.driemaandelijks)
+                                Text("Jaarlijks").tag(Frequentie.jaarlijks)
+                            }
+
+                            DatePicker("Volgende vervaldatum", selection: $draft.volgendeVervaldatum, displayedComponents: .date)
+                            Toggle("Opzegbaar", isOn: $draft.opzegbaar)
+                            TextField("Notitie (optioneel)", text: $draft.notitie.orEmpty(), prompt: Text("Extra info (bv. plan, kortingscode)…"))
+                        } header: {
+                            Text("Details").foregroundStyle(Theme.primary)
+                        } footer: {
+                            Text("Categorie is een lijst die je later in Instellingen kunt beheren.")
+                        }
+                    }
+                    .navigationTitle(isEditing ? "Bewerk" : "Toevoegen")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Annuleer") { isPresentingAddEdit = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Bewaar") { saveDraft() }
+                                .disabled(draft.naam.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (parseLocalizedDouble(prijsText) ?? -1) < 0)
+                        }
+                    }
+                }
+            }
+            .alert("Abonnement verwijderen?", isPresented: $showDeleteAlert, presenting: pendingDelete) { abo in
+                Button("Verwijder", role: .destructive) {
+                    verwijder(abo)
+                }
+                Button("Annuleer", role: .cancel) { }
+            } message: { abo in
+                Text("\(abo.naam) wordt verwijderd en kan niet ongedaan gemaakt worden.")
+            }
+        }
+    }
+
+    // MARK: - Sections
+    private var headerKPISection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Picker("Periode", selection: $periode) {
+                        ForEach(Periode.allCases) { p in Text(p.rawValue).tag(p) }
+                    }
+                    .pickerStyle(.segmented)
+                    .tint(Theme.primary)
+                }
+
+                HStack(spacing: 12) {
+                    kpiTile(title: "Totaal", value: totaalGeformatteerd)
+                    kpiTile(title: "Abonnementen", value: "\(gefilterdeAbos.count)")
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var upcomingSection: some View {
+        Section("Binnenkort te betalen") {
+            ForEach(binnenkortAbos) { abo in
+                aboRow(abo)
+                    .badge(abo.isVandaag ? "Vandaag" : "over \(abo.dagenTotVervaldatum) d")
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) { verwijder(abo) } label: { Label("Verwijder", systemImage: "trash") }
+                        Button { markeerBetaald(abo) } label: { Label("Betaald", systemImage: "checkmark.circle") }
+                    }
+            }
+        }
+    }
+
+    private var volledigeLijstSection: some View {
+        Section("Alle abonnementen") {
+            ForEach(gefilterdeAbos) { abo in
+                aboRow(abo)
+                    .contentShape(Rectangle())
+                    .onTapGesture { openEdit(abo) }
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            pendingDelete = abo
+                            showDeleteAlert = true
+                        } label: { Label("Verwijder", systemImage: "trash") }
+                        Button { openEdit(abo) } label: { Label("Bewerk", systemImage: "pencil") }
+                    }
+            }
+            .onDelete { offsets in
+                let idsToDelete = offsets.map { gefilterdeAbos[$0].id }
+                withAnimation { abonnementen.removeAll { idsToDelete.contains($0.id) } }
+            }
+        }
+    }
+
+    // MARK: - Rows & Tiles
+    private func aboRow(_ abo: Abonnement) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icoonVoorCategorie(abo.categorie))
+                .font(.title3)
+                .foregroundStyle(Theme.primary)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(abo.naam).font(.headline)
+                    if abo.opzegbaar {
+                        Text("Opzegbaar")
+                            .font(.caption2)
+                            .foregroundStyle(Theme.primary)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(Theme.primary.opacity(0.12), in: Capsule())
+                    }
+                }
+                Text(abo.categorie.capitalized).font(.subheadline).foregroundStyle(.secondary)
+                Text(vervaldatumTekst(abo.volgendeVervaldatum)).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 6) {
+                Text(bedragTekst(abo)).font(.headline).foregroundStyle(Theme.primary)
+                Text(frequentieTekst(abo.frequentie)).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private func kpiTile(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(.caption).foregroundStyle(.secondary)
+            Text(value).font(.title2).fontWeight(.semibold).foregroundStyle(Theme.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(
+            LinearGradient(colors: [Theme.primary.opacity(0.12), Theme.primary.opacity(0.04)], startPoint: .topLeading, endPoint: .bottomTrailing),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Theme.primary.opacity(0.15))
+        )
+    }
+
+    // MARK: - Helpers
+    private var gefilterdeAbos: [Abonnement] {
+        guard !zoektekst.isEmpty else { return abonnementen.sorted { $0.naam.localizedCaseInsensitiveCompare($1.naam) == .orderedAscending } }
+        return abonnementen.filter { $0.naam.localizedCaseInsensitiveContains(zoektekst) || $0.categorie.localizedCaseInsensitiveContains(zoektekst) }
+            .sorted { $0.naam.localizedCaseInsensitiveCompare($1.naam) == .orderedAscending }
+    }
+
+    private var binnenkortAbos: [Abonnement] {
+        gefilterdeAbos.filter { $0.isBinnen30Dagen }
+            .sorted { $0.volgendeVervaldatum < $1.volgendeVervaldatum }
+    }
+
+    private var binnenkortLeeg: Bool { binnenkortAbos.isEmpty }
+
+    private var totaal: Double {
+        switch periode {
+        case .maand: return gefilterdeAbos.map { $0.maandBedrag }.reduce(0, +)
+        case .jaar: return gefilterdeAbos.map { $0.jaarBedrag }.reduce(0, +)
+        }
+    }
+
+    private var totaalGeformatteerd: String { currency(totaal) }
+
+    private func bedragTekst(_ abo: Abonnement) -> String {
+        switch periode {
+        case .maand: return currency(abo.maandBedrag)
+        case .jaar: return currency(abo.jaarBedrag)
+        }
+    }
+
+    private func frequentieTekst(_ f: Frequentie) -> String {
+        switch f {
+        case .wekelijks: return "Wekelijks"
+        case .maandelijks: return "Maandelijks"
+        case .driemaandelijks: return "Driemaandelijks"
+        case .jaarlijks: return "Jaarlijks"
+        }
+    }
+
+    private func icoonVoorCategorie(_ cat: String) -> String {
+        switch cat.lowercased() {
+        case "video", "tv", "streaming": return "play.rectangle"
+        case "muziek", "music": return "music.note"
+        case "cloud", "opslag": return "icloud"
+        case "software": return "app.badge"
+        case "sport", "fitness": return "figure.run"
+        case "internet": return "wifi"
+        default: return "creditcard"
+        }
+    }
+
+    private func vervaldatumTekst(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: Locale.preferredLanguages.first ?? "nl_BE")
+        f.dateStyle = .medium
+        return f.string(from: date)
+    }
+
+    private func currency(_ value: Double) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencyCode = currencyCode
+        f.locale = Locale.current
+        return f.string(from: NSNumber(value: value)) ?? "\(currencyCode) " + String(format: "%.2f", value)
+    }
+    
+    // MARK: - Actions (mock)
+    private func openAdd() {
+        editingID = nil
+        draft = Draft()
+        prijsText = ""
+        isPresentingAddEdit = true
+    }
+
+    private func openEdit(_ abo: Abonnement) {
+        editingID = abo.id
+        draft = Draft(
+            naam: abo.naam,
+            prijs: abo.prijs,
+            frequentie: abo.frequentie,
+            volgendeVervaldatum: abo.volgendeVervaldatum,
+            categorie: abo.categorie,
+            opzegbaar: abo.opzegbaar,
+            notitie: abo.notitie
+        )
+        prijsText = plainNumberString(abo.prijs)
+        isPresentingAddEdit = true
+    }
+
+    private func saveDraft() {
+        let parsedPrijs = parseLocalizedDouble(prijsText) ?? 0
+        let newOrUpdated = Abonnement(
+            naam: draft.naam.trimmingCharacters(in: .whitespacesAndNewlines),
+            prijs: parsedPrijs,
+            frequentie: draft.frequentie,
+            volgendeVervaldatum: draft.volgendeVervaldatum,
+            categorie: draft.categorie.trimmingCharacters(in: .whitespacesAndNewlines),
+            opzegbaar: draft.opzegbaar,
+            notitie: draft.notitie
+        )
+
+        if let id = editingID, let idx = abonnementen.firstIndex(where: { $0.id == id }) {
+            // Preserve the original ID when editing
+            var updated = newOrUpdated
+            // overwrite generated id with original
+            let originalID = abonnementen[idx].id
+            // rebuild with same id
+            updated = Abonnement(
+                naam: updated.naam,
+                prijs: updated.prijs,
+                frequentie: updated.frequentie,
+                volgendeVervaldatum: updated.volgendeVervaldatum,
+                categorie: updated.categorie,
+                opzegbaar: updated.opzegbaar,
+                notitie: updated.notitie
+            )
+            // replace in place while keeping array order
+            abonnementen.remove(at: idx)
+            abonnementen.insert(Abonnement(
+                naam: updated.naam,
+                prijs: updated.prijs,
+                frequentie: updated.frequentie,
+                volgendeVervaldatum: updated.volgendeVervaldatum,
+                categorie: updated.categorie,
+                opzegbaar: updated.opzegbaar,
+                notitie: updated.notitie
+            ), at: idx)
+            // NOTE: The synthesized id will change; if you want to preserve UUID, promote `id` to var.
+        } else {
+            abonnementen.append(newOrUpdated)
+        }
+        isPresentingAddEdit = false
+    }
+
+    private func parseLocalizedDouble(_ text: String) -> Double? {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale.current
+        formatter.numberStyle = .decimal
+        // Sta zowel komma als punt toe
+        let cleaned = text.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: ",", with: formatter.decimalSeparator ?? ",").replacingOccurrences(of: ".", with: formatter.decimalSeparator ?? ",")
+        return formatter.number(from: cleaned)?.doubleValue
+    }
+
+    private func plainNumberString(_ value: Double) -> String {
+        let f = NumberFormatter()
+        f.locale = Locale.current
+        f.numberStyle = .decimal
+        f.maximumFractionDigits = 2
+        f.minimumFractionDigits = 0
+        return f.string(from: NSNumber(value: value)) ?? String(value)
+    }
+
+    private func verwijder(_ abo: Abonnement) {
+        withAnimation { abonnementen.removeAll { $0.id == abo.id } }
+    }
+
+    private func markeerBetaald(_ abo: Abonnement) {
+        // Voor nu simuleren we: schuif de vervaldatum door naar de volgende periode.
+        if let idx = abonnementen.firstIndex(where: { $0.id == abo.id }) {
+            withAnimation {
+                abonnementen[idx].volgendeVervaldatum = abonnementen[idx].volgendeVervaldatumNaHuidige()
+            }
+        }
+    }
+}
+
+// MARK: - Preview + Mock Data
+private enum Mock {
+    static var abonnementen: [HomescreenView.Abonnement] {
+        let cal = Calendar.current
+        return [
+            .init(naam: "Netflix", prijs: 15.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 5, to: .now)!, categorie: "Streaming", opzegbaar: true, notitie: nil),
+            .init(naam: "Spotify", prijs: 10.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 27, to: .now)!, categorie: "Muziek", opzegbaar: true, notitie: nil),
+            .init(naam: "iCloud+", prijs: 2.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 1, to: .now)!, categorie: "Cloud", opzegbaar: true, notitie: "200 GB"),
+            .init(naam: "Amazon Prime", prijs: 89.00, frequentie: .jaarlijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 120, to: .now)!, categorie: "Video", opzegbaar: true, notitie: nil),
+            .init(naam: "Strava", prijs: 5.99, frequentie: .wekelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 3, to: .now)!, categorie: "Sport", opzegbaar: true, notitie: nil),
+            .init(naam: "Adobe CC", prijs: 24.19, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 9, to: .now)!, categorie: "Software", opzegbaar: false, notitie: nil),
+        ]
+    }
+}
+
+private extension Binding where Value == String? {
+    /// Provides a non-optional Binding<String> for use in TextField, while writing back nil when empty.
+    func orEmpty(_ defaultValue: String = "") -> Binding<String> {
+        Binding<String>(
+            get: { self.wrappedValue ?? defaultValue },
+            set: { newValue in
+                let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.wrappedValue = trimmed.isEmpty ? nil : newValue
+            }
+        )
+    }
+}
+
+private enum CategoriesDefaults {
+    static let key = "categories"
+    static let fallback = ["Streaming", "Muziek", "Cloud", "Software", "Sport", "Internet", "Overig"]
+    static func load() -> [String] {
+        if let data = UserDefaults.standard.data(forKey: key),
+           let arr = try? JSONDecoder().decode([String].self, from: data), !arr.isEmpty {
+            return arr
+        }
+        return fallback
+    }
+}
+
+
+#Preview {
+    HomescreenView()
+}
