@@ -479,6 +479,16 @@ struct instellingenView: View {
                 return
             }
 
+            // --- Begin: auto-correct trigger date if in past ---
+            var finalDate = triggerDate
+            let now = Date()
+            if finalDate <= now {
+                if let adjusted = Calendar.current.date(byAdding: .minute, value: 1, to: now) {
+                    finalDate = adjusted
+                }
+            }
+            // --- End: auto-correct trigger date if in past ---
+
             let content = UNMutableNotificationContent()
             content.title = appDisplayName()
             content.subtitle = name
@@ -489,7 +499,7 @@ struct instellingenView: View {
             }
             content.sound = .default
 
-            let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
+            let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: finalDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
             let identifier = "sub-\(name)-\(Int(dueDate.timeIntervalSince1970))"
             let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
@@ -501,7 +511,7 @@ struct instellingenView: View {
                     } else {
                         let hm = String(format: "%02d:%02d", self.notifHour, self.notifMinute)
                         let df = DateFormatter(); df.dateStyle = .medium; df.timeStyle = .none
-                        self.notifStatus = "✅ Herinnering ingepland op \(df.string(from: triggerDate)) om \(hm)."
+                        self.notifStatus = "✅ Herinnering ingepland op \(df.string(from: finalDate)) om \(hm)."
                     }
                 }
             }

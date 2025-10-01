@@ -56,6 +56,15 @@ private func scheduleSubscriptionReminder(name: String, dueDate: Date, amountTex
 
         guard let triggerDate = preferredTriggerDate(for: dueDate, leadDays: leadDays, hour: hour, minute: minute) else { return }
 
+        // Corrigeer als de berekende trigger al in het verleden ligt → plan op nu + 1 minuut
+        var finalDate = triggerDate
+        let now = Date()
+        if finalDate <= now {
+            if let adjusted = Calendar.current.date(byAdding: .minute, value: 1, to: now) {
+                finalDate = adjusted
+            }
+        }
+
         let content = UNMutableNotificationContent()
         content.title = appDisplayName()
         content.subtitle = name
@@ -66,7 +75,7 @@ private func scheduleSubscriptionReminder(name: String, dueDate: Date, amountTex
         }
         content.sound = .default
 
-        let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
+        let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: finalDate)
         let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
         let identifier = "sub-\(name)-\(Int(dueDate.timeIntervalSince1970))"
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
