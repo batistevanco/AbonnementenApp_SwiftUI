@@ -107,6 +107,11 @@ struct HomescreenView: View {
     @AppStorage("appTheme") private var appTheme: String = "system"
     @AppStorage("dismissedSwipeHint") private var dismissedSwipeHint: Bool = false
     @AppStorage("dismissedInfoHint") private var dismissedInfoHint: Bool = false
+    @AppStorage("dismissedPayHint") private var dismissedPayHint: Bool = false
+    // Count abonnementen die aandacht nodig hebben (vervaldatum vandaag of in het verleden)
+    private var needsPayCount: Int {
+        abonnementen.filter { daysUntil($0.volgendeVervaldatum) <= 0 }.count
+    }
 
     // Add/Edit state
     @State private var isPresentingAddEdit = false
@@ -204,6 +209,7 @@ struct HomescreenView: View {
             List {
                 if !dismissedSwipeHint { swipeHintSection }
                 if !dismissedInfoHint { infoHintSection }
+                if needsPayCount > 0 && !dismissedPayHint { payHintSection }
                 headerKPISection
                 if !binnenkortLeeg {
                     upcomingSection
@@ -347,6 +353,28 @@ struct HomescreenView: View {
             .padding(.vertical, 4)
         }
     }
+    private var payHintSection: some View {
+        Section {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.title3)
+                    .foregroundStyle(Theme.primary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Vergeet niet te betalen")
+                        .font(.headline)
+                        .foregroundStyle(Theme.primary)
+                    Text(needsPayCount == 1 ? "Er staat 1 abonnement met vervaldatum vandaag of eerder. Markeer het als ‘Betaald’ wanneer je betaald hebt." : "Er staan \(needsPayCount) abonnementen met vervaldatum vandaag of eerder. Markeer ze als ‘Betaald’ wanneer je betaald hebt.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("OK") { withAnimation { dismissedPayHint = true } }
+                    .buttonStyle(.bordered)
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
     private var headerKPISection: some View {
         Section {
             VStack(alignment: .leading, spacing: 12) {
@@ -471,11 +499,11 @@ struct HomescreenView: View {
 
     private var totaalGeformatteerd: String { currency(totaal) }
 
+    // Toon in de rijen altijd het originele bedrag van het abonnement (zoals ingegeven),
+    // onafhankelijk van de geselecteerde weergaveperiode. Alleen het KPI "Totaal"
+    // gebruikt de periode (maand/jaar) om te herberekenen.
     private func bedragTekst(_ abo: Abonnement) -> String {
-        switch periode {
-        case .maand: return currency(abo.maandBedrag)
-        case .jaar: return currency(abo.jaarBedrag)
-        }
+        return currency(abo.prijs)
     }
 
     private func frequentieTekst(_ f: Frequentie) -> String {
@@ -634,3 +662,4 @@ private extension Binding where Value == String? {
 #Preview {
     HomescreenView()
 }
+

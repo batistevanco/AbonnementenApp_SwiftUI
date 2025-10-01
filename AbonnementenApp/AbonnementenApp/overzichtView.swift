@@ -19,7 +19,7 @@ struct overzichtView: View {
     @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
     @State private var categorieen: [String] = []
     @State private var gekozenCategorie: String = "Alle"
-    @State private var periodeIsJaar: Bool = false // false=maand, true=jaar
+    @AppStorage("overviewPeriodIsYear") private var periodeIsJaar: Bool = false // false=maand, true=jaar (persisted)
 
     private var preferredScheme: ColorScheme? {
         switch appTheme { case "light": return .light; case "dark": return .dark; default: return nil }
@@ -120,7 +120,8 @@ struct overzichtView: View {
                 Text(frequentieTekst(abo.frequentie)).font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
-            Text(currency(periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag))
+            let bedrag = currency(periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag)
+            Text(periodeIsJaar ? "Jaarlijks: \(bedrag)" : bedrag)
                 .font(.body)
                 .fontWeight(.semibold)
                 .foregroundStyle(Theme.primary)
