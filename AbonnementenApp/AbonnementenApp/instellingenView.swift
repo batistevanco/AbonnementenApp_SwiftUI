@@ -5,9 +5,9 @@
 //  Created by Batiste Vancoillie on 30/09/2025.
 //
 
-
 import SwiftUI
 import UserNotifications
+import UIKit
 
 
 // MARK: - Keys & Defaults
@@ -15,9 +15,12 @@ private enum SettingsKeys {
     static let notifLeadDays = "notifLeadDays"
     static let currencyCode   = "currencyCode"
     static let appTheme       = "appTheme"
+    static let accentMode     = "accentMode"       // "default" | "custom"
+    static let accentCustomColor = "accentCustomColor" // Data (JSON-encoded RGBA)
 }
 
 extension Notification.Name { static let categoriesUpdated = Notification.Name("categoriesUpdated") }
+extension Notification.Name { static let accentColorChanged = Notification.Name("accentColorChanged") }
 
 // MARK: - Settings View
 struct instellingenView: View {
@@ -29,6 +32,11 @@ struct instellingenView: View {
 
     // Thema: system / light / dark
     @AppStorage(SettingsKeys.appTheme) private var appTheme: String = "system"
+    
+    // Accentkleur: default/custom + opgeslagen kleur
+    @AppStorage(SettingsKeys.accentMode) private var accentMode: String = "default"
+    @AppStorage(SettingsKeys.accentCustomColor) private var accentCustomColorRaw: Data = Data()
+    @State private var customAccentColor: Color = .accentColor
 
     @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
     @State private var categories: [String] = []
@@ -61,12 +69,6 @@ struct instellingenView: View {
                 Text("Je krijgt een push/herinnering \(labelForLeadDays(notifLeadDays)).")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-
-                Button {
-                    sendTestNotification()
-                } label: {
-                    Label("Stuur testmelding", systemImage: "paperplane.circle.fill")
-                }
             } header: {
                 Text("Meldingen")
             }
@@ -78,6 +80,20 @@ struct instellingenView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                Text("Kies kleur")
+
+                
+                Picker("Accentkleur", selection: $accentMode) {
+                    Text("Standaard").tag("default")
+                    Text("Aangepast").tag("custom")
+                }
+                .pickerStyle(.segmented)
+                if accentMode == "custom" {
+                    ColorPicker("Kies kleur", selection: $customAccentColor, supportsOpacity: false)
+                        .onChange(of: customAccentColor) { _, _ in
+                            saveCustomAccentColor()
+                        }
+                }
 
                 Picker("Valuta", selection: $currencyCode) {
                     ForEach(currencyOptions, id: \.self) { code in
@@ -85,10 +101,14 @@ struct instellingenView: View {
                     }
                 }
                 .pickerStyle(.navigationLink)
+                
+               
+
+               
             } header: {
                 Text("Weergave")
             } footer: {
-                Text("De thema-instelling wordt app-breed toegepast. Valuta wordt gebruikt bij het tonen en opslaan van bedragen.")
+                Text("De thema-instelling wordt app-breed toegepast. Valuta wordt gebruikt bij het tonen en opslaan van bedragen. Je kunt ook de **accentkleur** kiezen: **Standaard** gebruikt de app-kleur, **Aangepast** gebruikt je gekozen kleur.")
             }
 
             Section {
@@ -146,6 +166,14 @@ struct instellingenView: View {
         .onAppear { loadCategories(); loadIconMap() }
         .onChange(of: categories, initial: false) { _,_  in saveCategories() }
         .onChange(of: categoryIconMapRaw, initial: false) { _, _ in loadIconMap() }
+        .onAppear { loadCustomAccentColor() }
+        .onChange(of: accentMode, initial: false) { _, newValue in
+            if newValue == "default" {
+                NotificationCenter.default.post(name: .accentColorChanged, object: nil)
+            } else {
+                saveCustomAccentColor()
+            }
+        }
         .sheet(isPresented: $isShowingInfo) {
             NavigationStack {
                 ScrollView {
@@ -236,7 +264,7 @@ struct instellingenView: View {
             categoryIconMap = CategoryIconMapDefaults.load()
         }
     }
-
+    
     private func saveIconMap() {
         if let data = try? JSONEncoder().encode(categoryIconMap) {
             categoryIconMapRaw = data
@@ -255,6 +283,46 @@ struct instellingenView: View {
         return categoryIconMap[key] ?? CategoryIcon.symbol(for: category)
     }
 
+    // MARK: - Accent Color Persistence
+    private struct RGBAColor: Codable { let r: Double; let g: Double; let b: Double; let a: Double }
+
+    private func colorToRGBA(_ color: Color) -> RGBAColor {
+        #if canImport(UIKit)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a)
+        return RGBAColor(r: Double(r), g: Double(g), b: Double(b), a: Double(a))
+        #else
+        return RGBAColor(r: 0, g: 0, b: 0, a: 1)
+        #endif
+    }
+
+    private func rgbaToColor(_ rgba: RGBAColor) -> Color {
+        #if canImport(UIKit)
+        return Color(UIColor(red: rgba.r, green: rgba.g, blue: rgba.b, alpha: rgba.a))
+        #else
+        return Color(.sRGB, red: rgba.r, green: rgba.g, blue: rgba.b, opacity: rgba.a)
+        #endif
+    }
+
+    private func loadCustomAccentColor() {
+        if accentCustomAccentIsSaved() == false { return }
+        if let raw = try? JSONDecoder().decode(RGBAColor.self, from: accentCustomColorRaw) {
+            customAccentColor = rgbaToColor(raw)
+        }
+    }
+
+    private func saveCustomAccentColor() {
+        let rgba = colorToRGBA(customAccentColor)
+        if let data = try? JSONEncoder().encode(rgba) {
+            accentCustomColorRaw = data
+            NotificationCenter.default.post(name: .accentColorChanged, object: nil)
+        }
+    }
+
+    private func accentCustomAccentIsSaved() -> Bool {
+        !accentCustomColorRaw.isEmpty
+    }
+
     // MARK: - Permissions & Test Notification
     private func ensureNotificationPermission(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -270,19 +338,6 @@ struct instellingenView: View {
             @unknown default:
                 completion(false)
             }
-        }
-    }
-
-    private func sendTestNotification() {
-        ensureNotificationPermission { granted in
-            guard granted else { return }
-            let content = UNMutableNotificationContent()
-            content.title = "Testmelding"
-            content.body = "Dit is een test van je herinneringsinstelling (\(labelForLeadDays(notifLeadDays)))."
-            content.sound = .default
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
         }
     }
 

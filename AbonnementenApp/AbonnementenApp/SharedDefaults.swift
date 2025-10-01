@@ -20,6 +20,22 @@ struct Theme {
     static let warning: Color = .orange
     static let destructive: Color = .red
 }
+
+// MARK: - Accent Color Defaults
+enum AccentColorDefaults {
+    private struct RGBA: Codable { let r: Double; let g: Double; let b: Double; let a: Double }
+
+    static func currentAccentColor(fallback: Color = .accentColor) -> Color {
+        let ud = UserDefaults.standard
+        let mode = ud.string(forKey: "accentMode") ?? "default"
+        guard mode == "custom",
+              let data = ud.data(forKey: "accentCustomColor"),
+              let rgba = try? JSONDecoder().decode(RGBA.self, from: data) else {
+            return fallback
+        }
+        return Color(.sRGB, red: rgba.r, green: rgba.g, blue: rgba.b, opacity: rgba.a)
+    }
+}
 enum Frequentie: String, CaseIterable, Codable {
     case wekelijks, maandelijks, driemaandelijks, jaarlijks
 }

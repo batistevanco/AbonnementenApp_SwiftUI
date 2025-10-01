@@ -28,6 +28,15 @@ struct ContentView: View {
                 }
         }
         .preferredColorScheme(preferredScheme)
+        .onAppear {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                if granted {
+                    print("Notificaties toegestaan")
+                } else {
+                    print("Notificaties geweigerd: \(String(describing: error))")
+                }
+            }
+        }
     }
 
     private var preferredScheme: ColorScheme? {
