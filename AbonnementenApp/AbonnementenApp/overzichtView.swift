@@ -58,6 +58,7 @@ struct overzichtView: View {
             .onChange(of: abonnementenData, initial: false) { _, _ in loadAbonnementen() }
             .onChange(of: categoriesRaw, initial: false) { _, _ in loadCategorieen() }
         }
+        .tint(Theme.primary)
     }
 
     // MARK: - Persistence helpers

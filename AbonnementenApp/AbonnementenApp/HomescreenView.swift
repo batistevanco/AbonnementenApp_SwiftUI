@@ -116,7 +116,12 @@ struct HomescreenView: View {
                     NavigationLink { instellingenView() } label: { Image(systemName: "gearshape").foregroundStyle(Theme.primary) }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { openAdd() } label: { Label("Toevoegen", systemImage: "plus.circle.fill").foregroundStyle(Theme.primary) }
+                    Button { openAdd() } label: {
+                        Image(systemName: "plus")
+                            .imageScale(.large)
+                            .font(.headline)
+                            .symbolRenderingMode(.monochrome)
+                    }
                 }
             }
             .searchable(text: $zoektekst, isPresented: $isSearchActive, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
