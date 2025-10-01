@@ -110,13 +110,19 @@ struct overzichtView: View {
 
     private func aboRow(_ abo: Abonnement) -> some View {
         HStack {
-            Image(systemName: icoonVoorCategorie(abo.categorie)).frame(width: 24)
+            Image(systemName: abo.iconSymbol)
+                .font(.title3)
+                .foregroundStyle(Theme.primary)
+                .frame(width: 28)
             VStack(alignment: .leading) {
                 Text(abo.naam).font(.body)
                 Text(frequentieTekst(abo.frequentie)).font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
-            Text(currency(periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag)).font(.body).fontWeight(.semibold)
+            Text(currency(periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag))
+                .font(.body)
+                .fontWeight(.semibold)
+                .foregroundStyle(Theme.primary)
         }
         .padding(.vertical, 4)
     }
@@ -167,18 +173,6 @@ struct overzichtView: View {
         f.currencyCode = currencyCode
         f.locale = Locale.current
         return f.string(from: NSNumber(value: value)) ?? "\(currencyCode) " + String(format: "%.2f", value)
-    }
-
-    private func icoonVoorCategorie(_ cat: String) -> String {
-        switch cat.lowercased() {
-        case "video", "tv", "streaming": return "play.rectangle"
-        case "muziek", "music": return "music.note"
-        case "cloud", "opslag": return "icloud"
-        case "software": return "app.badge"
-        case "sport", "fitness": return "figure.run"
-        case "internet": return "wifi"
-        default: return "creditcard"
-        }
     }
 
     private func frequentieTekst(_ f: Frequentie) -> String {

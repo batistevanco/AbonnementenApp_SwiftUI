@@ -6,42 +6,6 @@
 //
 import SwiftUI
 
-// MARK: - Theme
-private struct Theme {
-    // Logo primary: deep teal
-    static let primary = Color(hex: "#0F5A55")
-    // Accent for highlights (coin/check vibe)
-    static let accent  = Color(hex: "#00B894")
-    // Warm highlight for money focus
-    static let amber   = Color(hex: "#FFC857")
-    // Subtle surfaces
-    static let surface = Color(hex: "#F4F6F6")
-}
-
-private extension Color {
-    init(hex: String) {
-        let r, g, b, a: Double
-        var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        if hexString.hasPrefix("#") { hexString.removeFirst() }
-        var value: UInt64 = 0
-        Scanner(string: hexString).scanHexInt64(&value)
-        switch hexString.count {
-        case 6:
-            r = Double((value & 0xFF0000) >> 16) / 255
-            g = Double((value & 0x00FF00) >> 8) / 255
-            b = Double( value & 0x0000FF) / 255
-            a = 1.0
-        case 8:
-            r = Double((value & 0xFF000000) >> 24) / 255
-            g = Double((value & 0x00FF0000) >> 16) / 255
-            b = Double((value & 0x0000FF00) >> 8) / 255
-            a = Double( value & 0x000000FF) / 255
-        default:
-            r = 0.0; g = 0.0; b = 0.0; a = 1.0
-        }
-        self.init(.sRGB, red: r, green: g, blue: b, opacity: a)
-    }
-}
 
 struct HomescreenView: View {
     // MARK: - Types
@@ -51,6 +15,7 @@ struct HomescreenView: View {
     @AppStorage("periodeRaw") private var periodeRaw: String = Periode.maand.rawValue
     @State private var periode: Periode = .maand
     @State private var zoektekst: String = ""
+    @State private var isSearchActive: Bool = false
     @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
     @State private var abonnementen: [Abonnement] = []
     @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
@@ -72,6 +37,7 @@ struct HomescreenView: View {
         var frequentie: Frequentie = .maandelijks
         var volgendeVervaldatum: Date = Date()
         var categorie: String = "Overig"
+        var categorieIcon: String? = nil  
         var opzegbaar: Bool = true
         var notitie: String? = nil
     }
@@ -91,6 +57,14 @@ struct HomescreenView: View {
         case "dark":  return .dark
         default:      return nil // system
         }
+    }
+
+    // Binding for icon picker ("__auto__" sentinel = follow category)
+    private var iconSelection: Binding<String> {
+        Binding<String>(
+            get: { draft.categorieIcon ?? "__auto__" },
+            set: { draft.categorieIcon = ($0 == "__auto__") ? nil : $0 }
+        )
     }
 
     // MARK: - Persistence helpers (AppStorage <-> in-memory)
@@ -170,7 +144,9 @@ struct HomescreenView: View {
                 }
                 volledigeLijstSection
             }
+            .simultaneousGesture(TapGesture().onEnded { dismissKeyboard(); if isSearchActive { isSearchActive = false; zoektekst = "" } })
             .listStyle(.insetGrouped)
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("AbboBuddy")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -183,7 +159,7 @@ struct HomescreenView: View {
                     Button { openAdd() } label: { Label("Toevoegen", systemImage: "plus.circle.fill").foregroundStyle(Theme.primary) }
                 }
             }
-            .searchable(text: $zoektekst, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
+            .searchable(text: $zoektekst, isPresented: $isSearchActive, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
             .onAppear { periode = Periode(rawValue: periodeRaw) ?? .maand; loadAbonnementen(); loadCategorieen() }
             .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in loadCategorieen() }
             .onChange(of: categoriesRaw, initial: false) { _, _ in loadCategorieen() }
@@ -199,6 +175,16 @@ struct HomescreenView: View {
                             Picker("Categorie", selection: $draft.categorie) {
                                 ForEach(categorieen, id: \.self) { cat in
                                     Text(cat).tag(cat)
+                                }
+                            }
+                            .pickerStyle(.navigationLink)
+                            
+                            Picker("Icoon", selection: iconSelection) {
+                                HStack { Image(systemName: CategoryIcon.symbol(for: draft.categorie)); Text("Volg categorie (automatisch)") }
+                                    .tag("__auto__")
+                                ForEach(CategoryIconOptions.options, id: \.symbol) { opt in
+                                    HStack { Image(systemName: opt.symbol); Text(opt.name) }
+                                        .tag(opt.symbol)
                                 }
                             }
                             .pickerStyle(.navigationLink)
@@ -222,6 +208,7 @@ struct HomescreenView: View {
                             Text("Categorie is een lijst die je later in Instellingen kunt beheren.")
                         }
                     }
+                    .scrollDismissesKeyboard(.immediately)
                     .navigationTitle(isEditing ? "Bewerk" : "Toevoegen")
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
@@ -232,7 +219,7 @@ struct HomescreenView: View {
                                 .disabled(draft.naam.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (parseLocalizedDouble(prijsText) ?? -1) < 0)
                         }
                     }
-                }
+                }.simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
             }
             .alert("Abonnement verwijderen?", isPresented: $showDeleteAlert, presenting: pendingDelete) { abo in
                 Button("Verwijder", role: .destructive) {
@@ -303,7 +290,7 @@ struct HomescreenView: View {
     // MARK: - Rows & Tiles
     private func aboRow(_ abo: Abonnement) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icoonVoorCategorie(abo.categorie))
+            Image(systemName: abo.iconSymbol)
                 .font(.title3)
                 .foregroundStyle(Theme.primary)
                 .frame(width: 28)
@@ -386,17 +373,6 @@ struct HomescreenView: View {
         }
     }
 
-    private func icoonVoorCategorie(_ cat: String) -> String {
-        switch cat.lowercased() {
-        case "video", "tv", "streaming": return "play.rectangle"
-        case "muziek", "music": return "music.note"
-        case "cloud", "opslag": return "icloud"
-        case "software": return "app.badge"
-        case "sport", "fitness": return "figure.run"
-        case "internet": return "wifi"
-        default: return "creditcard"
-        }
-    }
 
     private func vervaldatumTekst(_ date: Date) -> String {
         let f = DateFormatter()
@@ -411,6 +387,12 @@ struct HomescreenView: View {
         f.currencyCode = currencyCode
         f.locale = Locale.current
         return f.string(from: NSNumber(value: value)) ?? "\(currencyCode) " + String(format: "%.2f", value)
+    }
+    
+    private func dismissKeyboard() {
+        #if canImport(UIKit)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        #endif
     }
     
     // MARK: - Actions (mock)
@@ -429,6 +411,7 @@ struct HomescreenView: View {
             frequentie: abo.frequentie,
             volgendeVervaldatum: abo.volgendeVervaldatum,
             categorie: abo.categorie,
+            categorieIcon: abo.categorieIcon,
             opzegbaar: abo.opzegbaar,
             notitie: abo.notitie
         )
@@ -444,6 +427,7 @@ struct HomescreenView: View {
             frequentie: draft.frequentie,
             volgendeVervaldatum: draft.volgendeVervaldatum,
             categorie: draft.categorie.trimmingCharacters(in: .whitespacesAndNewlines),
+            categorieIcon: draft.categorieIcon,
             opzegbaar: draft.opzegbaar,
             notitie: draft.notitie
         )
@@ -461,6 +445,7 @@ struct HomescreenView: View {
                 frequentie: updated.frequentie,
                 volgendeVervaldatum: updated.volgendeVervaldatum,
                 categorie: updated.categorie,
+                categorieIcon: updated.categorieIcon,
                 opzegbaar: updated.opzegbaar,
                 notitie: updated.notitie
             )

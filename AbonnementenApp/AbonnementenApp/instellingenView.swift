@@ -35,6 +35,11 @@ struct instellingenView: View {
     @State private var newCategory: String = ""
     @State private var isShowingInfo: Bool = false
 
+    @AppStorage("categoryIconMap") private var categoryIconMapRaw: Data = Data()
+    @State private var categoryIconMap: [String:String] = [:]
+    @State private var showIconPicker: Bool = false
+    @State private var categoryToEditIcon: String? = nil
+
     private let leadTimeOptions: [(label: String, days: Int)] = [
         ("Op de dag zelf", 0), ("1 dag voordien", 1), ("2 dagen voordien", 2),
         ("3 dagen voordien", 3), ("1 week voordien", 7), ("2 weken voordien", 14)
@@ -92,7 +97,18 @@ struct instellingenView: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(categories, id: \.self) { cat in
-                        Text(cat)
+                        HStack {
+                            Image(systemName: symbolForCategory(cat))
+                            Text(cat)
+                            Spacer()
+                            Button {
+                                categoryToEditIcon = cat
+                                showIconPicker = true
+                            } label: {
+                                Label("Icoon", systemImage: "paintpalette")
+                            }
+                            .buttonStyle(.bordered)
+                        }
                     }
                     .onDelete(perform: deleteCategories)
                     .onMove(perform: moveCategories)
@@ -100,7 +116,9 @@ struct instellingenView: View {
 
                 HStack {
                     TextField("Nieuwe categorie…", text: $newCategory)
+                        .onSubmit { addCategory() }
                     Button {
+                        dismissKeyboard()
                         addCategory()
                     } label: {
                         Label("Voeg toe", systemImage: "plus.circle.fill")
@@ -113,6 +131,8 @@ struct instellingenView: View {
                 Text("Standaardcategorieën zijn: \(CategoriesDefaults.fallback.joined(separator: ", ")). Je kunt deze lijst vrij aanpassen.")
             }
         }
+        .scrollDismissesKeyboard(.immediately)
+        .simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
         .navigationTitle("Instellingen")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) { EditButton() }
@@ -124,8 +144,9 @@ struct instellingenView: View {
                 }
             }
         }
-        .onAppear { loadCategories() }
+        .onAppear { loadCategories(); loadIconMap() }
         .onChange(of: categories, initial: false) { _,_  in saveCategories() }
+        .onChange(of: categoryIconMapRaw, initial: false) { _, _ in loadIconMap() }
         .sheet(isPresented: $isShowingInfo) {
             NavigationStack {
                 ScrollView {
@@ -178,6 +199,61 @@ struct instellingenView: View {
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Sluit") { isShowingInfo = false } } }
             }
         }
+        .sheet(isPresented: $showIconPicker) {
+            let cat = categoryToEditIcon ?? ""
+            NavigationStack {
+                List {
+                    ForEach(CategoryIconOptions.options, id: \.symbol) { opt in
+                        Button {
+                            setIcon(opt.symbol, for: cat)
+                            showIconPicker = false
+                        } label: {
+                            HStack {
+                                Label(opt.name, systemImage: opt.symbol)
+                                Spacer()
+                                if symbolForCategory(cat) == opt.symbol { Image(systemName: "checkmark") }
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Kies icoon")
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Sluit") { showIconPicker = false } } }
+            }
+        }
+    }
+
+    // MARK: - Keyboard
+    private func dismissKeyboard() {
+        #if canImport(UIKit)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        #endif
+    }
+
+    // MARK: - Category Icon Map
+    private func loadIconMap() {
+        if let map = try? JSONDecoder().decode([String:String].self, from: categoryIconMapRaw) {
+            categoryIconMap = map
+        } else {
+            categoryIconMap = CategoryIconMapDefaults.load()
+        }
+    }
+
+    private func saveIconMap() {
+        if let data = try? JSONEncoder().encode(categoryIconMap) {
+            categoryIconMapRaw = data
+            CategoryIconMapDefaults.save(categoryIconMap)
+        }
+    }
+
+    private func setIcon(_ symbol: String, for category: String) {
+        let key = category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        categoryIconMap[key] = symbol
+        saveIconMap()
+    }
+
+    private func symbolForCategory(_ category: String) -> String {
+        let key = category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return categoryIconMap[key] ?? CategoryIcon.symbol(for: category)
     }
 
     // MARK: - Permissions & Test Notification
@@ -228,17 +304,6 @@ struct instellingenView: View {
         }
     }
 
-    // MARK: - Helpers
-    private func labelForLeadDays(_ days: Int) -> String {
-        switch days {
-        case 0: return "op de vervaldag"
-        case 1: return "1 dag op voorhand"
-        case 7: return "1 week op voorhand"
-        case 14: return "2 weken op voorhand"
-        default: return "\(days) dagen op voorhand"
-        }
-    }
-
     private func addCategory() {
         let trimmed = newCategory.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -252,12 +317,27 @@ struct instellingenView: View {
 
     private func deleteCategories(at offsets: IndexSet) {
         categories.remove(atOffsets: offsets)
+        // remove any icon assignments for deleted categories
+        let lowered = Set(categories.map { $0.lowercased() })
+        categoryIconMap = categoryIconMap.filter { lowered.contains($0.key) }
+        saveIconMap()
         saveCategories()
     }
 
     private func moveCategories(from source: IndexSet, to destination: Int) {
         categories.move(fromOffsets: source, toOffset: destination)
         saveCategories()
+    }
+
+    // MARK: - Helpers
+    private func labelForLeadDays(_ days: Int) -> String {
+        switch days {
+        case 0: return "op de vervaldag"
+        case 1: return "1 dag op voorhand"
+        case 7: return "1 week op voorhand"
+        case 14: return "2 weken op voorhand"
+        default: return "\(days) dagen op voorhand"
+        }
     }
 }
 
