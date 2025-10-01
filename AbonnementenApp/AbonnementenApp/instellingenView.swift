@@ -18,6 +18,8 @@ private enum SettingsKeys {
     static let appTheme       = "appTheme"
     static let accentMode     = "accentMode"       // "default" | "custom"
     static let accentCustomColor = "accentCustomColor" // Data (JSON-encoded RGBA)
+    static let notifHour      = "notifHour"
+    static let notifMinute    = "notifMinute"
 }
 
 extension Notification.Name { static let categoriesUpdated = Notification.Name("categoriesUpdated") }
@@ -27,6 +29,11 @@ extension Notification.Name { static let accentColorChanged = Notification.Name(
 struct instellingenView: View {
     // Meldingen lead time (dagen)
     @AppStorage(SettingsKeys.notifLeadDays) private var notifLeadDays: Int = 2
+    @AppStorage(SettingsKeys.notifHour) private var notifHour: Int = 9
+    @AppStorage(SettingsKeys.notifMinute) private var notifMinute: Int = 0
+    @State private var notifTime: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
+    // Testmelding status
+    @State private var notifStatus: String = ""
 
     // Valuta (ISO-4217)
     @AppStorage(SettingsKeys.currencyCode) private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
@@ -88,6 +95,20 @@ struct instellingenView: View {
                 Text("Je krijgt een push/herinnering \(labelForLeadDays(notifLeadDays)).")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+
+                DatePicker("Tijdstip van melding", selection: $notifTime, displayedComponents: .hourAndMinute)
+                    .onChange(of: notifTime) { _, newValue in
+                        let cal = Calendar.current
+                        notifHour = cal.component(.hour, from: newValue)
+                        notifMinute = cal.component(.minute, from: newValue)
+                    }
+
+                Text("Meldingen worden verstuurd rond \(String(format: "%02d:%02d", notifHour, notifMinute)).")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
+                
+                // Testmelding UI verwijderd
             } header: {
                 Text("Meldingen")
             }
@@ -230,6 +251,13 @@ struct instellingenView: View {
                     NotificationCenter.default.post(name: .accentColorChanged, object: nil)
                 } else {
                     saveCustomAccentColor()
+                }
+            }
+        }
+        .onAppear {
+            if !isPreview {
+                if let d = Calendar.current.date(bySettingHour: notifHour, minute: notifMinute, second: 0, of: Date()) {
+                    notifTime = d
                 }
             }
         }
@@ -412,6 +440,74 @@ struct instellingenView: View {
         }
     }
 
+    private func appDisplayName() -> String {
+        if let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String, !name.isEmpty {
+            return name
+        }
+        if let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String, !name.isEmpty {
+            return name
+        }
+        return "Abonnementen"
+    }
+
+
+    /// Bouwt de gewenste trigger-datum op basis van vervaldatum, leadDays en het ingestelde tijdstip.
+    private func preferredTriggerDate(for dueDate: Date, leadDays: Int, hour: Int, minute: Int, calendar: Calendar = .current) -> Date? {
+        let day = calendar.date(byAdding: .day, value: -leadDays, to: dueDate)
+        guard let base = day else { return nil }
+        var comps = calendar.dateComponents([.year, .month, .day], from: base)
+        comps.hour = hour
+        comps.minute = minute
+        comps.second = 0
+        return calendar.date(from: comps)
+    }
+
+    /// Publieke helper die je elders in de app kan oproepen om een echte abonnements-herinnering in te plannen.
+    /// - Parameters:
+    ///   - name: Titel (bv. naam van het abonnement)
+    ///   - dueDate: Vervaldatum van het abonnement
+    ///   - amountText: Optioneel bedragstekst voor in de body (bv. "€9,99")
+    func scheduleSubscriptionReminder(name: String, dueDate: Date, amountText: String? = nil) {
+        ensureNotificationPermission { granted in
+            guard granted else {
+                DispatchQueue.main.async { self.notifStatus = "❌ Notificatierechten ontbreken. Zet meldingen aan via Instellingen > Notificaties." }
+                return
+            }
+
+            guard let triggerDate = preferredTriggerDate(for: dueDate, leadDays: self.notifLeadDays, hour: self.notifHour, minute: self.notifMinute) else {
+                DispatchQueue.main.async { self.notifStatus = "⚠️ Kon trigger-datum niet berekenen." }
+                return
+            }
+
+            let content = UNMutableNotificationContent()
+            content.title = appDisplayName()
+            content.subtitle = name
+            if let amountText = amountText, !amountText.isEmpty {
+                content.body = "Vervalt bijna. Te betalen: \(amountText)."
+            } else {
+                content.body = "Vervalt bijna."
+            }
+            content.sound = .default
+
+            let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+            let identifier = "sub-\(name)-\(Int(dueDate.timeIntervalSince1970))"
+            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+            UNUserNotificationCenter.current().add(request) { error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.notifStatus = "⚠️ Kon herinnering niet plannen: \(error.localizedDescription)"
+                    } else {
+                        let hm = String(format: "%02d:%02d", self.notifHour, self.notifMinute)
+                        let df = DateFormatter(); df.dateStyle = .medium; df.timeStyle = .none
+                        self.notifStatus = "✅ Herinnering ingepland op \(df.string(from: triggerDate)) om \(hm)."
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Persistence (Categories via AppStorage)
     private func loadCategories() {
         if let arr = try? JSONDecoder().decode([String].self, from: categoriesRaw), !arr.isEmpty {
@@ -492,3 +588,4 @@ struct MailView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) { }
 }
+

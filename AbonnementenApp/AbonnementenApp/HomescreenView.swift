@@ -4,7 +4,83 @@
 //
 //  Created by Batiste Vancoillie on 30/09/2025.
 //
+
 import SwiftUI
+import UserNotifications
+
+// MARK: - Notification helpers (local)
+private func appDisplayName() -> String {
+    if let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String, !name.isEmpty {
+        return name
+    }
+    if let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String, !name.isEmpty {
+        return name
+    }
+    return "Abonnementen"
+}
+
+private func ensureNotificationPermission(_ completion: @escaping (Bool) -> Void) {
+    UNUserNotificationCenter.current().getNotificationSettings { settings in
+        switch settings.authorizationStatus {
+        case .authorized, .provisional, .ephemeral:
+            completion(true)
+        case .denied:
+            completion(false)
+        case .notDetermined:
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+                completion(granted)
+            }
+        @unknown default:
+            completion(false)
+        }
+    }
+}
+
+private func preferredTriggerDate(for dueDate: Date, leadDays: Int, hour: Int, minute: Int, calendar: Calendar = .current) -> Date? {
+    guard let base = calendar.date(byAdding: .day, value: -leadDays, to: dueDate) else { return nil }
+    var comps = calendar.dateComponents([.year, .month, .day], from: base)
+    comps.hour = hour
+    comps.minute = minute
+    comps.second = 0
+    return calendar.date(from: comps)
+}
+
+private func scheduleSubscriptionReminder(name: String, dueDate: Date, amountText: String? = nil) {
+    ensureNotificationPermission { granted in
+        guard granted else { return }
+
+        let defaults = UserDefaults.standard
+        let leadDays = defaults.object(forKey: "notifLeadDays") as? Int ?? 2
+        let hour = defaults.object(forKey: "notifHour") as? Int ?? 9
+        let minute = defaults.object(forKey: "notifMinute") as? Int ?? 0
+
+        guard let triggerDate = preferredTriggerDate(for: dueDate, leadDays: leadDays, hour: hour, minute: minute) else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = appDisplayName()
+        content.subtitle = name
+        if let amountText = amountText, !amountText.isEmpty {
+            content.body = "Vervalt bijna. Te betalen: \(amountText)."
+        } else {
+            content.body = "Vervalt bijna."
+        }
+        content.sound = .default
+
+        let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: triggerDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+        let identifier = "sub-\(name)-\(Int(dueDate.timeIntervalSince1970))"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        // Optioneel: oude pending requests met zelfde naam opruimen
+        UNUserNotificationCenter.current().getPendingNotificationRequests { pending in
+            let toRemove = pending.map{ $0.identifier }.filter{ $0.hasPrefix("sub-\(name)-") }
+            if !toRemove.isEmpty {
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: toRemove)
+            }
+            UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+        }
+    }
+}
 
 
 struct HomescreenView: View {
@@ -465,6 +541,9 @@ struct HomescreenView: View {
             abonnementen.append(newOrUpdated)
         }
         saveAbonnementen()
+        // Plan notificatie voor dit abonnement op het ingestelde tijdstip
+        let bedragText = currency(parsedPrijs)
+        scheduleSubscriptionReminder(name: newOrUpdated.naam, dueDate: newOrUpdated.volgendeVervaldatum, amountText: bedragText)
         isPresentingAddEdit = false
     }
 
@@ -497,6 +576,9 @@ struct HomescreenView: View {
             withAnimation {
                 abonnementen[idx].volgendeVervaldatum = abonnementen[idx].volgendeVervaldatumNaHuidige()
                 saveAbonnementen()
+                // Na doorschuiven van de vervaldatum: nieuwe reminder plannen
+                let bedragText = currency(abonnementen[idx].prijs)
+                scheduleSubscriptionReminder(name: abonnementen[idx].naam, dueDate: abonnementen[idx].volgendeVervaldatum, amountText: bedragText)
             }
         }
     }
