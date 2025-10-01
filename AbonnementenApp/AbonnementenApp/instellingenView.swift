@@ -5,34 +5,16 @@
 //  Created by Batiste Vancoillie on 30/09/2025.
 //
 
+
 import SwiftUI
 import UserNotifications
+
 
 // MARK: - Keys & Defaults
 private enum SettingsKeys {
     static let notifLeadDays = "notifLeadDays"
     static let currencyCode   = "currencyCode"
     static let appTheme       = "appTheme"
-    static let categories     = "categories"
-}
-
-private enum SettingsDefaults {
-    static let fallbackCategories: [String] = ["Streaming", "Muziek", "Cloud", "Software", "Sport", "Internet", "Overig"]
-
-    static func loadCategories() -> [String] {
-        if let data = UserDefaults.standard.data(forKey: SettingsKeys.categories),
-           let arr = try? JSONDecoder().decode([String].self, from: data), !arr.isEmpty {
-            return arr
-        }
-        return fallbackCategories
-    }
-
-    static func saveCategories(_ arr: [String]) {
-        if let data = try? JSONEncoder().encode(arr) {
-            UserDefaults.standard.set(data, forKey: SettingsKeys.categories)
-            NotificationCenter.default.post(name: .categoriesUpdated, object: nil)
-        }
-    }
 }
 
 extension Notification.Name { static let categoriesUpdated = Notification.Name("categoriesUpdated") }
@@ -48,9 +30,10 @@ struct instellingenView: View {
     // Thema: system / light / dark
     @AppStorage(SettingsKeys.appTheme) private var appTheme: String = "system"
 
-    // Categorieën
-    @State private var categories: [String] = SettingsDefaults.loadCategories()
+    @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
+    @State private var categories: [String] = []
     @State private var newCategory: String = ""
+    @State private var isShowingInfo: Bool = false
 
     private let leadTimeOptions: [(label: String, days: Int)] = [
         ("Op de dag zelf", 0), ("1 dag voordien", 1), ("2 dagen voordien", 2),
@@ -127,20 +110,84 @@ struct instellingenView: View {
             } header: {
                 Text("Categorieën")
             } footer: {
-                Text("Standaardcategorieën zijn: \(SettingsDefaults.fallbackCategories.joined(separator: ", ")). Je kunt deze lijst vrij aanpassen.")
+                Text("Standaardcategorieën zijn: \(CategoriesDefaults.fallback.joined(separator: ", ")). Je kunt deze lijst vrij aanpassen.")
             }
         }
         .navigationTitle("Instellingen")
-        .toolbar { EditButton() }
-        .onDisappear { SettingsDefaults.saveCategories(categories) }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) { EditButton() }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isShowingInfo = true
+                } label: {
+                    Label("Info", systemImage: "info.circle")
+                }
+            }
+        }
+        .onAppear { loadCategories() }
+        .onChange(of: categories, initial: false) { _,_  in saveCategories() }
+        .sheet(isPresented: $isShowingInfo) {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Group {
+                            Text("Welkom bij Abonnementen")
+                                .font(.title2).bold()
+                            Text("Met deze app beheer je al je abonnementen op één plek. Hieronder een korte uitleg:")
+                        }
+                        Divider()
+                        Group {
+                            Text("📥 Abonnement toevoegen")
+                                .font(.headline)
+                            Text("Ga naar **Home** → tik op **Toevoegen**. Vul naam, prijs, frequentie, vervaldatum en categorie in. Je kunt ook een notitie en of het opzegbaar is aangeven.")
+                        }
+                        Group {
+                            Text("🧭 Overzicht & totalen")
+                                .font(.headline)
+                            Text("Bovenaan zie je totalen per **maand/jaar**. In **Overzicht** kun je filteren per categorie en de som per categorie zien.")
+                        }
+                        Group {
+                            Text("➡️ Swipen voor acties")
+                                .font(.headline)
+                            Text("Veeg een rij naar **links** om **Bewerk/Betaald** en **Verwijder** te tonen.")
+                        }
+                        Group {
+                            Text("🗂️ Categorieën beheren")
+                                .font(.headline)
+                            Text("Hier in **Instellingen** kun je categorieën toevoegen, verwijderen en herschikken. Wijzigingen worden overal toegepast.")
+                        }
+                        Group {
+                            Text("🔔 Herinneringen")
+                                .font(.headline)
+                            Text("Stel in wanneer je een melding wil krijgen vóór de vervaldatum. Je kunt ook een testmelding sturen.")
+                        }
+                        Group {
+                            Text("💱 Valuta & 🎨 Thema")
+                                .font(.headline)
+                            Text("Kies je **valuta** en stel het **thema** in (Systeem/Licht/Donker). Deze instellingen gelden app-breed.")
+                        }
+                        Group {
+                            Text("💾 Opslag")
+                                .font(.headline)
+                            Text("Alles wordt lokaal bewaard via **AppStorage** (UserDefaults). Je data blijft bewaard tussen app-sessies.")
+                        }
+                    }
+                    .padding()
+                }
+                .navigationTitle("Hoe werkt de app?")
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Sluit") { isShowingInfo = false } } }
+            }
+        }
     }
 
     // MARK: - Permissions & Test Notification
     private func ensureNotificationPermission(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             switch settings.authorizationStatus {
-            case .authorized, .provisional: completion(true)
-            case .denied: completion(false)
+            case .authorized, .provisional, .ephemeral:
+                completion(true)
+            case .denied:
+                completion(false)
             case .notDetermined:
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
                     completion(granted)
@@ -164,6 +211,23 @@ struct instellingenView: View {
         }
     }
 
+    // MARK: - Persistence (Categories via AppStorage)
+    private func loadCategories() {
+        if let arr = try? JSONDecoder().decode([String].self, from: categoriesRaw), !arr.isEmpty {
+            categories = arr
+        } else {
+            categories = CategoriesDefaults.fallback
+            saveCategories() // seed storage
+        }
+    }
+
+    private func saveCategories() {
+        if let data = try? JSONEncoder().encode(categories) {
+            categoriesRaw = data
+            NotificationCenter.default.post(name: .categoriesUpdated, object: nil)
+        }
+    }
+
     // MARK: - Helpers
     private func labelForLeadDays(_ days: Int) -> String {
         switch days {
@@ -183,17 +247,17 @@ struct instellingenView: View {
             categories.sort { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
         }
         newCategory = ""
-        SettingsDefaults.saveCategories(categories)
+        saveCategories()
     }
 
     private func deleteCategories(at offsets: IndexSet) {
         categories.remove(atOffsets: offsets)
-        SettingsDefaults.saveCategories(categories)
+        saveCategories()
     }
 
     private func moveCategories(from source: IndexSet, to destination: Int) {
         categories.move(fromOffsets: source, toOffset: destination)
-        SettingsDefaults.saveCategories(categories)
+        saveCategories()
     }
 }
 

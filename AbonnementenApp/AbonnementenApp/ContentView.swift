@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
+    @AppStorage("appTheme") private var appTheme: String = "system"
+    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
+    @AppStorage("categories") private var categoriesRaw: Data = Data()
+
     var body: some View {
         TabView {
             HomescreenView()
@@ -21,6 +26,15 @@ struct ContentView: View {
                     Image(systemName: "info.circle.fill")
                     Text("Overzicht")
                 }
+        }
+        .preferredColorScheme(preferredScheme)
+    }
+
+    private var preferredScheme: ColorScheme? {
+        switch appTheme {
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil
         }
     }
 }

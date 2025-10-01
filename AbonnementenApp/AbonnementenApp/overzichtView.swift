@@ -8,41 +8,16 @@
 import SwiftUI
 
 struct overzichtView: View {
-    // MARK: - Local model (keeps this file self‑contained)
-    enum Frequentie: String, CaseIterable { case wekelijks, maandelijks, driemaandelijks, jaarlijks }
-    struct Abonnement: Identifiable {
-        let id = UUID()
-        var naam: String
-        var prijs: Double
-        var frequentie: Frequentie
-        var volgendeVervaldatum: Date
-        var categorie: String
-
-        var maandBedrag: Double {
-            switch frequentie {
-            case .wekelijks: return prijs * 52.0 / 12.0
-            case .maandelijks: return prijs
-            case .driemaandelijks: return prijs / 3.0
-            case .jaarlijks: return prijs / 12.0
-            }
-        }
-        var jaarBedrag: Double {
-            switch frequentie {
-            case .wekelijks: return prijs * 52.0
-            case .maandelijks: return prijs * 12.0
-            case .driemaandelijks: return prijs * 4.0
-            case .jaarlijks: return prijs
-            }
-        }
-    }
 
     // MARK: - Settings
     @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @AppStorage("appTheme") private var appTheme: String = "system"
 
     // MARK: - State
-    @State private var abonnementen: [Abonnement] = Mock.abonnementen
-    @State private var categorieen: [String] = CategoriesDefaults.load()
+    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
+    @State private var abonnementen: [Abonnement] = []
+    @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
+    @State private var categorieen: [String] = []
     @State private var gekozenCategorie: String = "Alle"
     @State private var periodeIsJaar: Bool = false // false=maand, true=jaar
 
@@ -78,9 +53,27 @@ struct overzichtView: View {
             .listStyle(.insetGrouped)
             .navigationTitle("Overzicht")
             .preferredColorScheme(preferredScheme)
-            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in
-                categorieen = CategoriesDefaults.load()
-            }
+            .onAppear { loadAbonnementen(); loadCategorieen() }
+            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in loadCategorieen() }
+            .onChange(of: abonnementenData, initial: false) { _, _ in loadAbonnementen() }
+            .onChange(of: categoriesRaw, initial: false) { _, _ in loadCategorieen() }
+        }
+    }
+
+    // MARK: - Persistence helpers
+    private func loadAbonnementen() {
+        if let arr = try? JSONDecoder().decode([Abonnement].self, from: abonnementenData), !arr.isEmpty {
+            abonnementen = arr
+        } else {
+            abonnementen = []
+        }
+    }
+
+    private func loadCategorieen() {
+        if let arr = try? JSONDecoder().decode([String].self, from: categoriesRaw), !arr.isEmpty {
+            categorieen = arr
+        } else {
+            categorieen = CategoriesDefaults.fallback
         }
     }
 
@@ -198,33 +191,8 @@ struct overzichtView: View {
     }
 }
 
-// MARK: - Defaults bridge
-private enum CategoriesDefaults {
-    static let key = "categories"
-    static let fallback = ["Streaming", "Muziek", "Cloud", "Software", "Sport", "Internet", "Overig"]
-    static func load() -> [String] {
-        if let data = UserDefaults.standard.data(forKey: key),
-           let arr = try? JSONDecoder().decode([String].self, from: data), !arr.isEmpty {
-            return arr
-        }
-        return fallback
-    }
-}
 
-// MARK: - Preview + Mock Data
-private enum Mock {
-    static var abonnementen: [overzichtView.Abonnement] {
-        let cal = Calendar.current
-        return [
-            .init(naam: "Netflix", prijs: 15.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 5, to: .now)!, categorie: "Streaming"),
-            .init(naam: "Spotify", prijs: 10.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 27, to: .now)!, categorie: "Muziek"),
-            .init(naam: "iCloud+", prijs: 2.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 1, to: .now)!, categorie: "Cloud"),
-            .init(naam: "Amazon Prime", prijs: 89.00, frequentie: .jaarlijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 120, to: .now)!, categorie: "Streaming"),
-            .init(naam: "Strava", prijs: 5.99, frequentie: .wekelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 3, to: .now)!, categorie: "Sport"),
-            .init(naam: "Adobe CC", prijs: 24.19, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 9, to: .now)!, categorie: "Software")
-        ]
-    }
-}
+
 
 #Preview {
     overzichtView()

@@ -46,62 +46,17 @@ private extension Color {
 struct HomescreenView: View {
     // MARK: - Types
     enum Periode: String, CaseIterable, Identifiable { case maand = "Maand", jaar = "Jaar"; var id: String { rawValue } }
-    enum Frequentie: String, CaseIterable { case wekelijks, maandelijks, driemaandelijks, jaarlijks }
-
-    struct Abonnement: Identifiable {
-        // NOTE: `id` is immutable (new UUID) — editing will result in a new identity unless promoted to `var`.
-        let id = UUID()
-        var naam: String
-        var prijs: Double // prijs per periode van `frequentie`
-        var frequentie: Frequentie
-        var volgendeVervaldatum: Date
-        var categorie: String
-        var opzegbaar: Bool
-        var notitie: String?
-
-        // Genormaliseerde bedragen
-        var maandBedrag: Double {
-            switch frequentie {
-            case .wekelijks: return prijs * 52.0 / 12.0
-            case .maandelijks: return prijs
-            case .driemaandelijks: return prijs / 3.0
-            case .jaarlijks: return prijs / 12.0
-            }
-        }
-        var jaarBedrag: Double {
-            switch frequentie {
-            case .wekelijks: return prijs * 52.0
-            case .maandelijks: return prijs * 12.0
-            case .driemaandelijks: return prijs * 4.0
-            case .jaarlijks: return prijs
-            }
-        }
-
-        var dagenTotVervaldatum: Int { Calendar.current.dateComponents([.day], from: Date(), to: volgendeVervaldatum).day ?? 0 }
-        var isBinnen30Dagen: Bool { dagenTotVervaldatum >= 0 && dagenTotVervaldatum <= 30 }
-        var isVandaag: Bool { Calendar.current.isDateInToday(volgendeVervaldatum) }
-
-        func volgendeVervaldatumNaHuidige() -> Date {
-            let cal = Calendar.current
-            switch frequentie {
-            case .wekelijks:
-                return cal.date(byAdding: .weekOfYear, value: 1, to: volgendeVervaldatum) ?? volgendeVervaldatum
-            case .maandelijks:
-                return cal.date(byAdding: .month, value: 1, to: volgendeVervaldatum) ?? volgendeVervaldatum
-            case .driemaandelijks:
-                return cal.date(byAdding: .month, value: 3, to: volgendeVervaldatum) ?? volgendeVervaldatum
-            case .jaarlijks:
-                return cal.date(byAdding: .year, value: 1, to: volgendeVervaldatum) ?? volgendeVervaldatum
-            }
-        }
-    }
 
     // MARK: - State
+    @AppStorage("periodeRaw") private var periodeRaw: String = Periode.maand.rawValue
     @State private var periode: Periode = .maand
     @State private var zoektekst: String = ""
-    @State private var abonnementen: [Abonnement] = Mock.abonnementen
+    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
+    @State private var abonnementen: [Abonnement] = []
     @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @AppStorage("appTheme") private var appTheme: String = "system"
+    @AppStorage("dismissedSwipeHint") private var dismissedSwipeHint: Bool = false
+    @AppStorage("dismissedInfoHint") private var dismissedInfoHint: Bool = false
 
     // Add/Edit state
     @State private var isPresentingAddEdit = false
@@ -125,7 +80,8 @@ struct HomescreenView: View {
     @State private var prijsText: String = ""
 
     // Wordt beheerd in Instellingen en geladen uit UserDefaults
-    @State private var categorieen: [String] = CategoriesDefaults.load()
+    @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
+    @State private var categorieen: [String] = []
 
     private var isEditing: Bool { editingID != nil }
     
@@ -137,12 +93,77 @@ struct HomescreenView: View {
         }
     }
 
+    // MARK: - Persistence helpers (AppStorage <-> in-memory)
+    private func loadAbonnementen() {
+        if let arr = try? JSONDecoder().decode([Abonnement].self, from: abonnementenData), !arr.isEmpty {
+            abonnementen = arr
+        } else {
+            // Fresh start: no seed data for real users
+            abonnementen = []
+        }
+    }
+    
+    private func saveAbonnementen() {
+        if let data = try? JSONEncoder().encode(abonnementen) {
+            abonnementenData = data
+        }
+    }
+    
+    private func loadCategorieen() {
+        if let arr = try? JSONDecoder().decode([String].self, from: categoriesRaw), !arr.isEmpty {
+            categorieen = arr
+        } else {
+            categorieen = CategoriesDefaults.fallback
+        }
+    }
+
     // MARK: - Body
     var body: some View {
         NavigationStack {
             // App-wide tint on this screen
-            let _ = ()
             List {
+                if !dismissedSwipeHint {
+                    Section {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "hand.point.left.fill")
+                                .font(.title3)
+                                .foregroundStyle(Theme.primary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Tip")
+                                    .font(.headline)
+                                    .foregroundStyle(Theme.primary)
+                                Text("Veeg een abonnement naar links om **Verwijder** of **Bewerk/Betaald** te tonen.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Button("OK") { withAnimation { dismissedSwipeHint = true } }
+                                .buttonStyle(.bordered)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                if !dismissedInfoHint {
+                    Section {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "info.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(Theme.primary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Wist je dit?")
+                                    .font(.headline)
+                                    .foregroundStyle(Theme.primary)
+                                Text("Uitleg over hoe de app werkt vind je in **Instellingen → Info** (tandwiel linksboven).")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Button("OK") { withAnimation { dismissedInfoHint = true } }
+                                .buttonStyle(.bordered)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
                 headerKPISection
                 if !binnenkortLeeg {
                     upcomingSection
@@ -150,7 +171,7 @@ struct HomescreenView: View {
                 volledigeLijstSection
             }
             .listStyle(.insetGrouped)
-            .navigationTitle("Overzicht")
+            .navigationTitle("AbboBuddy")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     EditButton()
@@ -163,9 +184,10 @@ struct HomescreenView: View {
                 }
             }
             .searchable(text: $zoektekst, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
-            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in
-                categorieen = CategoriesDefaults.load()
-            }
+            .onAppear { periode = Periode(rawValue: periodeRaw) ?? .maand; loadAbonnementen(); loadCategorieen() }
+            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in loadCategorieen() }
+            .onChange(of: categoriesRaw, initial: false) { _, _ in loadCategorieen() }
+            .onChange(of: periode, initial: false) { oldValue, newValue in periodeRaw = newValue.rawValue }
             .preferredColorScheme(preferredScheme)
             .tint(Theme.primary)
             .sheet(isPresented: $isPresentingAddEdit) {
@@ -433,6 +455,7 @@ struct HomescreenView: View {
             let originalID = abonnementen[idx].id
             // rebuild with same id
             updated = Abonnement(
+                id: originalID,
                 naam: updated.naam,
                 prijs: updated.prijs,
                 frequentie: updated.frequentie,
@@ -443,19 +466,12 @@ struct HomescreenView: View {
             )
             // replace in place while keeping array order
             abonnementen.remove(at: idx)
-            abonnementen.insert(Abonnement(
-                naam: updated.naam,
-                prijs: updated.prijs,
-                frequentie: updated.frequentie,
-                volgendeVervaldatum: updated.volgendeVervaldatum,
-                categorie: updated.categorie,
-                opzegbaar: updated.opzegbaar,
-                notitie: updated.notitie
-            ), at: idx)
+            abonnementen.insert(updated, at: idx)
             // NOTE: The synthesized id will change; if you want to preserve UUID, promote `id` to var.
         } else {
             abonnementen.append(newOrUpdated)
         }
+        saveAbonnementen()
         isPresentingAddEdit = false
     }
 
@@ -479,6 +495,7 @@ struct HomescreenView: View {
 
     private func verwijder(_ abo: Abonnement) {
         withAnimation { abonnementen.removeAll { $0.id == abo.id } }
+        saveAbonnementen()
     }
 
     private func markeerBetaald(_ abo: Abonnement) {
@@ -486,25 +503,13 @@ struct HomescreenView: View {
         if let idx = abonnementen.firstIndex(where: { $0.id == abo.id }) {
             withAnimation {
                 abonnementen[idx].volgendeVervaldatum = abonnementen[idx].volgendeVervaldatumNaHuidige()
+                saveAbonnementen()
             }
         }
     }
 }
 
-// MARK: - Preview + Mock Data
-private enum Mock {
-    static var abonnementen: [HomescreenView.Abonnement] {
-        let cal = Calendar.current
-        return [
-            .init(naam: "Netflix", prijs: 15.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 5, to: .now)!, categorie: "Streaming", opzegbaar: true, notitie: nil),
-            .init(naam: "Spotify", prijs: 10.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 27, to: .now)!, categorie: "Muziek", opzegbaar: true, notitie: nil),
-            .init(naam: "iCloud+", prijs: 2.99, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 1, to: .now)!, categorie: "Cloud", opzegbaar: true, notitie: "200 GB"),
-            .init(naam: "Amazon Prime", prijs: 89.00, frequentie: .jaarlijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 120, to: .now)!, categorie: "Video", opzegbaar: true, notitie: nil),
-            .init(naam: "Strava", prijs: 5.99, frequentie: .wekelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 3, to: .now)!, categorie: "Sport", opzegbaar: true, notitie: nil),
-            .init(naam: "Adobe CC", prijs: 24.19, frequentie: .maandelijks, volgendeVervaldatum: cal.date(byAdding: .day, value: 9, to: .now)!, categorie: "Software", opzegbaar: false, notitie: nil),
-        ]
-    }
-}
+
 
 private extension Binding where Value == String? {
     /// Provides a non-optional Binding<String> for use in TextField, while writing back nil when empty.
@@ -519,17 +524,6 @@ private extension Binding where Value == String? {
     }
 }
 
-private enum CategoriesDefaults {
-    static let key = "categories"
-    static let fallback = ["Streaming", "Muziek", "Cloud", "Software", "Sport", "Internet", "Overig"]
-    static func load() -> [String] {
-        if let data = UserDefaults.standard.data(forKey: key),
-           let arr = try? JSONDecoder().decode([String].self, from: data), !arr.isEmpty {
-            return arr
-        }
-        return fallback
-    }
-}
 
 
 #Preview {
