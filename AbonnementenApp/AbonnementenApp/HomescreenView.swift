@@ -37,7 +37,7 @@ struct HomescreenView: View {
         var frequentie: Frequentie = .maandelijks
         var volgendeVervaldatum: Date = Date()
         var categorie: String = "Overig"
-        var categorieIcon: String? = nil  
+        var categorieIcon: String? = nil
         var opzegbaar: Bool = true
         var notitie: String? = nil
     }
@@ -96,48 +96,8 @@ struct HomescreenView: View {
         NavigationStack {
             // App-wide tint on this screen
             List {
-                if !dismissedSwipeHint {
-                    Section {
-                        HStack(alignment: .top, spacing: 10) {
-                            Image(systemName: "hand.point.left.fill")
-                                .font(.title3)
-                                .foregroundStyle(Theme.primary)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Tip")
-                                    .font(.headline)
-                                    .foregroundStyle(Theme.primary)
-                                Text("Veeg een abonnement naar links om **Verwijder** of **Bewerk/Betaald** te tonen.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Button("OK") { withAnimation { dismissedSwipeHint = true } }
-                                .buttonStyle(.bordered)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-                if !dismissedInfoHint {
-                    Section {
-                        HStack(alignment: .top, spacing: 10) {
-                            Image(systemName: "info.circle.fill")
-                                .font(.title3)
-                                .foregroundStyle(Theme.primary)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Wist je dit?")
-                                    .font(.headline)
-                                    .foregroundStyle(Theme.primary)
-                                Text("Uitleg over hoe de app werkt vind je in **Instellingen → Info** (tandwiel linksboven).")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Button("OK") { withAnimation { dismissedInfoHint = true } }
-                                .buttonStyle(.bordered)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
+                if !dismissedSwipeHint { swipeHintSection }
+                if !dismissedInfoHint { infoHintSection }
                 headerKPISection
                 if !binnenkortLeeg {
                     upcomingSection
@@ -233,6 +193,49 @@ struct HomescreenView: View {
     }
 
     // MARK: - Sections
+    private var swipeHintSection: some View {
+        Section {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "hand.point.left.fill")
+                    .font(.title3)
+                    .foregroundStyle(Theme.primary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Tip")
+                        .font(.headline)
+                        .foregroundStyle(Theme.primary)
+                    Text("Veeg een abonnement naar links om **Verwijder** of **Bewerk/Betaald** te tonen.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("OK") { withAnimation { dismissedSwipeHint = true } }
+                    .buttonStyle(.bordered)
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var infoHintSection: some View {
+        Section {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "info.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(Theme.primary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Wist je dit?")
+                        .font(.headline)
+                        .foregroundStyle(Theme.primary)
+                    Text("Uitleg over hoe de app werkt vind je in **Instellingen → Info** (tandwiel linksboven).")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("OK") { withAnimation { dismissedInfoHint = true } }
+                    .buttonStyle(.bordered)
+            }
+            .padding(.vertical, 4)
+        }
+    }
     private var headerKPISection: some View {
         Section {
             VStack(alignment: .leading, spacing: 12) {
@@ -366,10 +369,10 @@ struct HomescreenView: View {
 
     private func frequentieTekst(_ f: Frequentie) -> String {
         switch f {
-        case .wekelijks: return "Wekelijks"
-        case .maandelijks: return "Maandelijks"
+        case .wekelijks:       return "Wekelijks"
+        case .maandelijks:     return "Maandelijks"
         case .driemaandelijks: return "Driemaandelijks"
-        case .jaarlijks: return "Jaarlijks"
+        case .jaarlijks:       return "Jaarlijks"
         }
     }
 

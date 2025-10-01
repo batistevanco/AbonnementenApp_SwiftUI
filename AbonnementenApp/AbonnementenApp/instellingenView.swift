@@ -8,6 +8,7 @@
 import SwiftUI
 import UserNotifications
 import UIKit
+import MessageUI
 
 
 // MARK: - Keys & Defaults
@@ -48,6 +49,9 @@ struct instellingenView: View {
     @State private var showIconPicker: Bool = false
     @State private var categoryToEditIcon: String? = nil
 
+    @State private var showingMailSheet: Bool = false
+    @State private var mailFallbackFailed: Bool = false
+
     private let leadTimeOptions: [(label: String, days: Int)] = [
         ("Op de dag zelf", 0), ("1 dag voordien", 1), ("2 dagen voordien", 2),
         ("3 dagen voordien", 3), ("1 week voordien", 7), ("2 weken voordien", 14)
@@ -55,6 +59,21 @@ struct instellingenView: View {
 
     private let currencyOptions: [String] = ["EUR", "USD", "GBP", "CHF", "JPY"]
     private let themeOptions: [(label: String, key: String)] = [("Systeem", "system"), ("Licht", "light"), ("Donker", "dark")]
+
+    private var isPreview: Bool { ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" }
+
+    private func defaultProblemReportBody() -> String {
+        #if canImport(UIKit)
+        let device = UIDevice.current
+        let system = "iOS \(device.systemVersion)"
+        let model = device.model
+        #else
+        let system = "iOS"
+        let model = "Unknown"
+        #endif
+        let currency = currencyCode
+        return "Beschrijf hier je probleem...\n\n— App info —\nThema: \(appTheme)\nValuta: \(currency)\n— Device —\nModel: \(model)\nSysteem: \(system)\n"
+    }
 
     var body: some View {
         Form {
@@ -150,6 +169,44 @@ struct instellingenView: View {
             } footer: {
                 Text("Standaardcategorieën zijn: \(CategoriesDefaults.fallback.joined(separator: ", ")). Je kunt deze lijst vrij aanpassen.")
             }
+
+            Section {
+                Button(
+                    action: {
+                        #if canImport(UIKit)
+                        if MFMailComposeViewController.canSendMail() {
+                            showingMailSheet = true
+                        } else {
+                            let subject = "Abonnementen – Probleemrapport"
+                            let body = defaultProblemReportBody().addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                            let to = "info@vancoillieithulp.be"
+                            if let url = URL(string: "mailto:\(to)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body)") {
+                                if UIApplication.shared.canOpenURL(url) {
+                                    UIApplication.shared.open(url)
+                                } else {
+                                    mailFallbackFailed = true
+                                }
+                            } else {
+                                mailFallbackFailed = true
+                            }
+                        }
+                        #endif
+                    }
+                ) {
+                    Text("Meld een probleem")
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .foregroundColor(.white)
+                        .background(Color.accentColor)
+                        .cornerRadius(12)
+                        .multilineTextAlignment(.center)
+                }
+            } header: {
+                Text("Support")
+            } footer: {
+                Text("Lukt e-mail niet? Mail ons dan rechtstreeks op info@vancoillieithulp.be.")
+            }
         }
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Instellingen")
@@ -163,15 +220,17 @@ struct instellingenView: View {
                 }
             }
         }
-        .onAppear { loadCategories(); loadIconMap() }
-        .onChange(of: categories, initial: false) { _,_  in saveCategories() }
-        .onChange(of: categoryIconMapRaw, initial: false) { _, _ in loadIconMap() }
-        .onAppear { loadCustomAccentColor() }
+        .onAppear { if !isPreview { loadCategories(); loadIconMap() } }
+        .onChange(of: categories, initial: false) { _,_  in if !isPreview { saveCategories() } }
+        .onChange(of: categoryIconMapRaw, initial: false) { _, _ in if !isPreview { loadIconMap() } }
+        .onAppear { if !isPreview { loadCustomAccentColor() } }
         .onChange(of: accentMode, initial: false) { _, newValue in
-            if newValue == "default" {
-                NotificationCenter.default.post(name: .accentColorChanged, object: nil)
-            } else {
-                saveCustomAccentColor()
+            if !isPreview {
+                if newValue == "default" {
+                    NotificationCenter.default.post(name: .accentColorChanged, object: nil)
+                } else {
+                    saveCustomAccentColor()
+                }
             }
         }
         .sheet(isPresented: $isShowingInfo) {
@@ -246,6 +305,18 @@ struct instellingenView: View {
                 .navigationTitle("Kies icoon")
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Sluit") { showIconPicker = false } } }
             }
+        }
+        .sheet(isPresented: $showingMailSheet) {
+            MailView(
+                to: ["info@vancoillieithulp.be"],
+                subject: "Abonnementen – Probleemrapport",
+                body: defaultProblemReportBody()
+            )
+        }
+        .alert("E-mail kon niet geopend worden", isPresented: $mailFallbackFailed) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Kopieer en mail ons op info@vancoillieithulp.be.")
         }
     }
 
@@ -396,3 +467,28 @@ struct instellingenView: View {
 }
 
 #Preview { NavigationStack { instellingenView() } }
+
+struct MailView: UIViewControllerRepresentable {
+    var to: [String]
+    var subject: String
+    var body: String
+
+    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            controller.dismiss(animated: true)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.setToRecipients(to)
+        vc.setSubject(subject)
+        vc.setMessageBody(body, isHTML: false)
+        vc.mailComposeDelegate = context.coordinator
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) { }
+}
