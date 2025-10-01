@@ -176,6 +176,27 @@ struct HomescreenView: View {
         }
     }
 
+    // MARK: - Relative day formatting
+    private func daysUntil(_ date: Date, calendar: Calendar = .current) -> Int {
+        let startToday = calendar.startOfDay(for: Date())
+        let startTarget = calendar.startOfDay(for: date)
+        return calendar.dateComponents([.day], from: startToday, to: startTarget).day ?? 0
+    }
+
+    private func relativeDayLabel(_ date: Date) -> String {
+        let d = daysUntil(date)
+        switch d {
+        case ..<0:
+            return d == -1 ? "Gisteren" : "\(abs(d)) d geleden"
+        case 0:
+            return "Vandaag"
+        case 1:
+            return "Morgen"
+        default:
+            return "Over \(d) d"
+        }
+    }
+
     // MARK: - Body
     var body: some View {
         NavigationStack {
@@ -350,7 +371,7 @@ struct HomescreenView: View {
         Section("Binnenkort te betalen") {
             ForEach(binnenkortAbos) { abo in
                 aboRow(abo)
-                    .badge(abo.isVandaag ? "Vandaag" : "over \(abo.dagenTotVervaldatum) d")
+                    .badge(relativeDayLabel(abo.volgendeVervaldatum))
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) { verwijder(abo) } label: { Label("Verwijder", systemImage: "trash") }
                         Button { markeerBetaald(abo) } label: { Label("Betaald", systemImage: "checkmark.circle") }
