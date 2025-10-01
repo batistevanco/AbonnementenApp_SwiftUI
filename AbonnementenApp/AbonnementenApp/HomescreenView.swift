@@ -219,7 +219,7 @@ struct HomescreenView: View {
                                 .disabled(draft.naam.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (parseLocalizedDouble(prijsText) ?? -1) < 0)
                         }
                     }
-                }.simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
+                }
             }
             .alert("Abonnement verwijderen?", isPresented: $showDeleteAlert, presenting: pendingDelete) { abo in
                 Button("Verwijder", role: .destructive) {

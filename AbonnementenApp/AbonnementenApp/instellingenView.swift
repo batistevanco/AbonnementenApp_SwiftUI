@@ -132,7 +132,6 @@ struct instellingenView: View {
             }
         }
         .scrollDismissesKeyboard(.immediately)
-        .simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
         .navigationTitle("Instellingen")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) { EditButton() }
