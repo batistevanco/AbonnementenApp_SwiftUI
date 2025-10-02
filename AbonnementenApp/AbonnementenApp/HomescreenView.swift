@@ -578,7 +578,13 @@ struct HomescreenView: View {
     private func kpiTile(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title).font(.caption).foregroundStyle(.secondary)
-            Text(value).font(.title2).fontWeight(.semibold).foregroundStyle(Theme.primary)
+            Text(value)
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundStyle(Theme.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6) // verklein bij kleinere schermen/grote bedragen
+                .allowsTightening(true)  // knijp spaties zodat het op één regel past
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -652,7 +658,12 @@ struct HomescreenView: View {
         f.numberStyle = .currency
         f.currencyCode = currencyCode
         f.locale = Locale.current
-        return f.string(from: NSNumber(value: value)) ?? "\(currencyCode) " + String(format: "%.2f", value)
+        if let s = f.string(from: NSNumber(value: value)) {
+            // Zorg dat het valutateken en bedrag altijd op één regel blijven
+            return s.replacingOccurrences(of: " ", with: "\u{00A0}")
+        }
+        // Fallback met vaste niet-afbrekende spatie tussen code en bedrag
+        return "\(currencyCode)\u{00A0}" + String(format: "%.2f", value)
     }
     
     private func dismissKeyboard() {
