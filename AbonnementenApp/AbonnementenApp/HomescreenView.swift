@@ -45,6 +45,15 @@ private func preferredTriggerDate(for dueDate: Date, leadDays: Int, hour: Int, m
     return calendar.date(from: comps)
 }
 
+private func cancelRemindersForName(_ name: String) {
+    UNUserNotificationCenter.current().getPendingNotificationRequests { pending in
+        let ids = pending.map { $0.identifier }.filter { $0.hasPrefix("sub-\(name)-") }
+        if !ids.isEmpty {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
+        }
+    }
+}
+
 private func scheduleSubscriptionReminder(name: String, dueDate: Date, amountText: String? = nil) {
     ensureNotificationPermission { granted in
         guard granted else { return }
@@ -108,9 +117,29 @@ struct HomescreenView: View {
     @AppStorage("dismissedSwipeHint") private var dismissedSwipeHint: Bool = false
     @AppStorage("dismissedInfoHint") private var dismissedInfoHint: Bool = false
     @AppStorage("upcomingWeeksWindow") private var upcomingWeeksWindow: Int = 1
+    @AppStorage("autoMarkPaidOnDue") private var autoMarkPaidOnDue: Bool = false
     // Count abonnementen die aandacht nodig hebben (vervaldatum vandaag of in het verleden)
     private var needsPayCount: Int {
         abonnementen.filter { daysUntil($0.volgendeVervaldatum) <= 0 }.count
+    }
+    // Aantal items binnen "Binnenkort" met vervaldatum vandaag of eerder
+    private var needsPayInUpcomingCount: Int {
+        binnenkortAbos.filter { daysUntil($0.volgendeVervaldatum) <= 0 }.count
+    }
+
+    // Automatisch op betaaldag markeren (indien ingeschakeld)
+    private func autoMarkDueAsPaidIfEnabled() {
+        guard autoMarkPaidOnDue else { return }
+        let today = Calendar.current.startOfDay(for: Date())
+        let dueIDs = abonnementen
+            .filter { Calendar.current.startOfDay(for: $0.volgendeVervaldatum) <= today }
+            .map { $0.id }
+        guard !dueIDs.isEmpty else { return }
+        for id in dueIDs {
+            if let abo = abonnementen.first(where: { $0.id == id }) {
+                markeerBetaald(abo)
+            }
+        }
     }
 
     // Add/Edit state
@@ -119,6 +148,8 @@ struct HomescreenView: View {
     // Delete confirmation state
     @State private var pendingDelete: Abonnement? = nil
     @State private var showDeleteAlert: Bool = false
+    @State private var showDuplicateAlert: Bool = false
+    @State private var duplicateName: String = ""
 
     // Draft model used in the Add/Edit sheet
     private struct Draft {
@@ -130,6 +161,7 @@ struct HomescreenView: View {
         var categorieIcon: String? = nil
         var opzegbaar: Bool = true
         var notitie: String? = nil
+        var zonderVervaldag: Bool = false
     }
     @State private var draft = Draft()
     // Tekstveld voor prijs met placeholder (voorkomt standaard "0")
@@ -201,6 +233,22 @@ struct HomescreenView: View {
             return "Over \(d) d"
         }
     }
+    // Label voor "Binnenkort": Vandaag/Morgen/Overmorgen, anders bv. "7 okt"
+    private func upcomingDateLabel(_ date: Date) -> String {
+        let d = daysUntil(date)
+        switch d {
+        case ..<0:
+            return d == -1 ? "Gisteren" : "\(abs(d)) d geleden"
+        case 0:  return "Vandaag"
+        case 1:  return "Morgen"
+        case 2:  return "Overmorgen"
+        default:
+            let f = DateFormatter()
+            f.locale = Locale(identifier: Locale.preferredLanguages.first ?? "nl_BE")
+            f.setLocalizedDateFormatFromTemplate("d MMM")
+            return f.string(from: date)
+        }
+    }
 
     // MARK: - Body
     var body: some View {
@@ -209,7 +257,7 @@ struct HomescreenView: View {
             List {
                 if !dismissedSwipeHint { swipeHintSection }
                 if !dismissedInfoHint { infoHintSection }
-                if needsPayCount > 0 { payHintSection }
+                if needsPayInUpcomingCount > 0 { payHintSection }
                 headerKPISection
                 if !binnenkortLeeg {
                     upcomingSection
@@ -237,8 +285,13 @@ struct HomescreenView: View {
                 }
             }
             .searchable(text: $zoektekst, isPresented: $isSearchActive, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
-            .onAppear { periode = Periode(rawValue: periodeRaw) ?? .maand; loadAbonnementen(); loadCategorieen() }
+            .onAppear { periode = Periode(rawValue: periodeRaw) ?? .maand; loadAbonnementen(); loadCategorieen(); autoMarkDueAsPaidIfEnabled() }
             .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in loadCategorieen() }
+#if canImport(UIKit)
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                autoMarkDueAsPaidIfEnabled()
+            }
+#endif
             .onChange(of: categoriesRaw, initial: false) { _, _ in loadCategorieen() }
             .onChange(of: periode, initial: false) { oldValue, newValue in periodeRaw = newValue.rawValue }
             .preferredColorScheme(preferredScheme)
@@ -277,12 +330,24 @@ struct HomescreenView: View {
                             }
 
                             DatePicker("Volgende vervaldatum", selection: $draft.volgendeVervaldatum, displayedComponents: .date)
+                                .onChange(of: draft.volgendeVervaldatum) { _, newValue in
+                                    if draft.zonderVervaldag {
+                                        draft.volgendeVervaldatum = firstDayOfMonth(for: newValue)
+                                    }
+                                }
+
+                            Toggle("Zonder vervaldag", isOn: $draft.zonderVervaldag)
+                                .onChange(of: draft.zonderVervaldag) { _, enabled in
+                                    if enabled {
+                                        draft.volgendeVervaldatum = firstDayOfMonth(for: draft.volgendeVervaldatum)
+                                    }
+                                }
                             Toggle("Opzegbaar", isOn: $draft.opzegbaar)
                             TextField("Notitie (optioneel)", text: $draft.notitie.orEmpty(), prompt: Text("Extra info (bv. plan, kortingscode)…"))
                         } header: {
                             Text("Details").foregroundStyle(Theme.primary)
                         } footer: {
-                            Text("Categorie is een lijst die je later in Instellingen kunt beheren.")
+                            Text("Categorie is een lijst die je later in Instellingen kunt beheren. Zet **Zonder vervaldag** aan als je geen specifieke dag wil gebruiken; de app gebruikt dan achterliggend de **1ste dag van de maand**.")
                         }
                     }
                     .scrollDismissesKeyboard(.immediately)
@@ -305,6 +370,11 @@ struct HomescreenView: View {
                 Button("Annuleer", role: .cancel) { }
             } message: { abo in
                 Text("\(abo.naam) wordt verwijderd en kan niet ongedaan gemaakt worden.")
+            }
+            .alert("Naam bestaat al", isPresented: $showDuplicateAlert) {
+                Button("OK", role: .cancel) { duplicateName = "" }
+            } message: {
+                Text("Er bestaat al een abonnement met de naam \"\(duplicateName)\". Kies een andere naam.")
             }
         }
     }
@@ -363,7 +433,7 @@ struct HomescreenView: View {
                     Text("Vergeet niet te betalen")
                         .font(.headline)
                         .foregroundStyle(Theme.primary)
-                    Text(needsPayCount == 1 ? "Er staat 1 abonnement met vervaldatum vandaag of eerder. Markeer het als ‘Betaald’ wanneer je betaald hebt." : "Er staan \(needsPayCount) abonnementen met vervaldatum vandaag of eerder. Markeer ze als ‘Betaald’ wanneer je betaald hebt.")
+                    Text(needsPayInUpcomingCount == 1 ? "Er staat 1 abonnement met vervaldatum vandaag of eerder. Markeer het als ‘Betaald’ wanneer je betaald hebt." : "Er staan \(needsPayInUpcomingCount) abonnementen met vervaldatum vandaag of eerder. Markeer ze als ‘Betaald’ wanneer je betaald hebt.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -397,7 +467,6 @@ struct HomescreenView: View {
             ForEach(binnenkortAbos) { abo in
                 aboRowUpcoming(abo)   // <-- nieuwe layout
                     .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) { verwijder(abo) } label: { Label("Verwijder", systemImage: "trash") }
                         Button { markeerBetaald(abo) } label: { Label("Betaald", systemImage: "checkmark.circle") }
                     }
             }
@@ -498,7 +567,7 @@ struct HomescreenView: View {
                 Text(bedragTekst(abo))
                     .font(.headline)
                     .foregroundStyle(Theme.primary)
-                Text(vervaldatumTekst(abo.volgendeVervaldatum))
+                Text(upcomingDateLabel(abo.volgendeVervaldatum))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -572,6 +641,12 @@ struct HomescreenView: View {
         return f.string(from: date)
     }
 
+    private func firstDayOfMonth(for date: Date) -> Date {
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month], from: date)
+        return cal.date(from: comps) ?? date
+    }
+
     private func currency(_ value: Double) -> String {
         let f = NumberFormatter()
         f.numberStyle = .currency
@@ -604,13 +679,17 @@ struct HomescreenView: View {
             categorie: abo.categorie,
             categorieIcon: abo.categorieIcon,
             opzegbaar: abo.opzegbaar,
-            notitie: abo.notitie
+            notitie: abo.notitie,
+            zonderVervaldag: Calendar.current.component(.day, from: abo.volgendeVervaldatum) == 1
         )
         prijsText = plainNumberString(abo.prijs)
         isPresentingAddEdit = true
     }
 
     private func saveDraft() {
+        if draft.zonderVervaldag {
+            draft.volgendeVervaldatum = firstDayOfMonth(for: draft.volgendeVervaldatum)
+        }
         let parsedPrijs = parseLocalizedDouble(prijsText) ?? 0
         let newOrUpdated = Abonnement(
             naam: draft.naam.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -622,10 +701,30 @@ struct HomescreenView: View {
             opzegbaar: draft.opzegbaar,
             notitie: draft.notitie
         )
+        // Als de opgegeven vervaldatum in het verleden ligt, schuif door naar de eerstvolgende periode
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        var adjusted = newOrUpdated
+        while Calendar.current.startOfDay(for: adjusted.volgendeVervaldatum) < todayStart {
+            adjusted.volgendeVervaldatum = adjusted.volgendeVervaldatumNaHuidige()
+        }
+        
+        // Unieke naam afdwingen (case-insensitive, trim)
+        let newNameKey = adjusted.naam.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let conflict = abonnementen.contains {
+            $0.naam.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == newNameKey
+            && $0.id != editingID // laat zelfde naam toe bij bewerken van hetzelfde item
+        }
+        if conflict {
+            duplicateName = adjusted.naam
+            showDuplicateAlert = true
+            return
+        }
 
         if let id = editingID, let idx = abonnementen.firstIndex(where: { $0.id == id }) {
+            // Cancel old reminders for the original name before overwriting
+            cancelRemindersForName(abonnementen[idx].naam)
             // Preserve the original ID when editing
-            var updated = newOrUpdated
+            var updated = adjusted
             // overwrite generated id with original
             let originalID = abonnementen[idx].id
             // rebuild with same id
@@ -645,12 +744,14 @@ struct HomescreenView: View {
             abonnementen.insert(updated, at: idx)
             // NOTE: The synthesized id will change; if you want to preserve UUID, promote `id` to var.
         } else {
-            abonnementen.append(newOrUpdated)
+            abonnementen.append(adjusted)
+            // Defensive: clean up any old reminders for this name
+            cancelRemindersForName(adjusted.naam)
         }
         saveAbonnementen()
         // Plan notificatie voor dit abonnement op het ingestelde tijdstip
         let bedragText = currency(parsedPrijs)
-        scheduleSubscriptionReminder(name: newOrUpdated.naam, dueDate: newOrUpdated.volgendeVervaldatum, amountText: bedragText)
+        scheduleSubscriptionReminder(name: adjusted.naam, dueDate: adjusted.volgendeVervaldatum, amountText: bedragText)
         isPresentingAddEdit = false
     }
 
@@ -673,6 +774,8 @@ struct HomescreenView: View {
     }
 
     private func verwijder(_ abo: Abonnement) {
+        // Remove pending notifications for this subscription name before deleting
+        cancelRemindersForName(abo.naam)
         withAnimation { abonnementen.removeAll { $0.id == abo.id } }
         saveAbonnementen()
     }

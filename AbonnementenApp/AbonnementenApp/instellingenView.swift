@@ -21,6 +21,7 @@ private enum SettingsKeys {
     static let notifHour      = "notifHour"
     static let notifMinute    = "notifMinute"
     static let upcomingWeeksWindow = "upcomingWeeksWindow"
+    static let autoMarkPaidOnDue = "autoMarkPaidOnDue"
 }
 
 extension Notification.Name { static let categoriesUpdated = Notification.Name("categoriesUpdated") }
@@ -33,6 +34,7 @@ struct instellingenView: View {
     @AppStorage(SettingsKeys.notifHour) private var notifHour: Int = 9
     @AppStorage(SettingsKeys.notifMinute) private var notifMinute: Int = 0
     @AppStorage(SettingsKeys.upcomingWeeksWindow) private var upcomingWeeksWindow: Int = 1 // in weken (1-4)
+    @AppStorage(SettingsKeys.autoMarkPaidOnDue) private var autoMarkPaidOnDue: Bool = false
     @State private var notifTime: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
     // Testmelding status
     @State private var notifStatus: String = ""
@@ -93,6 +95,10 @@ struct instellingenView: View {
                     }
                 }
                 .pickerStyle(.navigationLink)
+                .onChange(of: notifLeadDays) { _, _ in
+                    // Wijziging in lead time -> alle reminders herplannen
+                    rescheduleAllSubscriptionReminders()
+                }
 
                 Text("Je krijgt een push/herinnering \(labelForLeadDays(notifLeadDays)).")
                     .font(.footnote)
@@ -103,6 +109,8 @@ struct instellingenView: View {
                         let cal = Calendar.current
                         notifHour = cal.component(.hour, from: newValue)
                         notifMinute = cal.component(.minute, from: newValue)
+                        // Tijdstip veranderd -> alle reminders herplannen
+                        rescheduleAllSubscriptionReminders()
                     }
 
                 Text("Meldingen worden verstuurd rond \(String(format: "%02d:%02d", notifHour, notifMinute)).")
@@ -124,6 +132,16 @@ struct instellingenView: View {
                 // Testmelding UI verwijderd
             } header: {
                 Text("Meldingen")
+            }
+            
+            Section{
+                Toggle("Automatisch op betaaldag markeren", isOn: $autoMarkPaidOnDue)
+                Text("Wanneer dit aan staat, worden abonnementen automatisch als **Betaald** gemarkeerd zodra de vervaldag aanbreekt (of zodra je de app opent als je de betaaldag gemist hebt).")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
+            } header: {
+                Text("Automatisch betaald markeren")
             }
 
             Section {
@@ -542,6 +560,43 @@ struct instellingenView: View {
                         self.notifStatus = "✅ Herinnering ingepland op \(df.string(from: finalDate)) om \(hm)."
                     }
                 }
+            }
+        }
+    }
+
+    // MARK: - (Re)Schedule helpers
+
+    /// Verwijder alle nog niet afgeleverde 'subscription' reminders.
+    private func cancelAllSubscriptionReminders(completion: (() -> Void)? = nil) {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { reqs in
+            let ids = reqs
+                .map(\.identifier)
+                .filter { $0.hasPrefix("sub-") }
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
+            completion?()
+        }
+    }
+
+    /// Eenvoudige currency formatter voor de body-tekst.
+    private func currencyText(_ value: Double) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencyCode = currencyCode
+        f.locale = .current
+        return f.string(from: NSNumber(value: value)) ?? "\(currencyCode) " + String(format: "%.2f", value)
+    }
+
+    /// Plant alle reminders opnieuw volgens de actuele instellingen.
+    private func rescheduleAllSubscriptionReminders() {
+        // Laad alle abonnementen uit de opslag
+        let abos = AbonnementenDefaults.load()
+
+        cancelAllSubscriptionReminders {
+            for abo in abos {
+                let amount = currencyText(abo.prijs)
+                self.scheduleSubscriptionReminder(name: abo.naam,
+                                                  dueDate: abo.volgendeVervaldatum,
+                                                  amountText: amount)
             }
         }
     }
