@@ -20,6 +20,7 @@ private enum SettingsKeys {
     static let accentCustomColor = "accentCustomColor" // Data (JSON-encoded RGBA)
     static let notifHour      = "notifHour"
     static let notifMinute    = "notifMinute"
+    static let upcomingWeeksWindow = "upcomingWeeksWindow"
 }
 
 extension Notification.Name { static let categoriesUpdated = Notification.Name("categoriesUpdated") }
@@ -31,6 +32,7 @@ struct instellingenView: View {
     @AppStorage(SettingsKeys.notifLeadDays) private var notifLeadDays: Int = 2
     @AppStorage(SettingsKeys.notifHour) private var notifHour: Int = 9
     @AppStorage(SettingsKeys.notifMinute) private var notifMinute: Int = 0
+    @AppStorage(SettingsKeys.upcomingWeeksWindow) private var upcomingWeeksWindow: Int = 1 // in weken (1-4)
     @State private var notifTime: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
     // Testmelding status
     @State private var notifStatus: String = ""
@@ -107,7 +109,18 @@ struct instellingenView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                
+                Picker("Toon in \"Binnenkort te betalen\"", selection: $upcomingWeeksWindow) {
+                    Text("1 week").tag(1)
+                    Text("2 weken").tag(2)
+                    Text("3 weken").tag(3)
+                    Text("4 weken").tag(4)
+                }
+                .pickerStyle(.segmented)
+
+                Text("Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen \(upcomingWeeksWindow) week\(upcomingWeeksWindow == 1 ? "" : "en") valt.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
                 // Testmelding UI verwijderd
             } header: {
                 Text("Meldingen")
@@ -282,6 +295,11 @@ struct instellingenView: View {
                             Text("Bovenaan zie je totalen per **maand/jaar**. In **Overzicht** kun je filteren per categorie en de som per categorie zien.")
                         }
                         Group {
+                            Text("📅 Maand/Jaar weergave")
+                                .font(.headline)
+                            Text("Kies bovenaan **Maand** of **Jaar**. Alleen het **Totaal** past zich aan; de bedragen in de lijst blijven het originele bedrag van elk abonnement. Staat **Jaar** aan, dan zie je bij elk item de prefix **‘Jaarlijks:’** voor extra duidelijkheid. Je laatste keuze wordt onthouden.")
+                        }
+                        Group {
                             Text("➡️ Swipen voor acties")
                                 .font(.headline)
                             Text("Veeg een rij naar **links** om **Bewerk/Betaald** en **Verwijder** te tonen.")
@@ -294,7 +312,17 @@ struct instellingenView: View {
                         Group {
                             Text("🔔 Herinneringen")
                                 .font(.headline)
-                            Text("Stel in wanneer je een melding wil krijgen vóór de vervaldatum. Je kunt ook een testmelding sturen.")
+                            Text("Stel in wanneer je een melding wil krijgen vóór de vervaldatum.")
+                        }
+                        Group {
+                            Text("🔜 Binnenkort‑venster")
+                                .font(.headline)
+                            Text("Bepaal zelf wanneer items in **Binnenkort te betalen** verschijnen. In **Instellingen → Meldingen** kies je **1, 2, 3 of 4 weken**. De app toont dan alle abonnementen waarvan de vervaldatum binnen dat venster valt.")
+                        }
+                        Group {
+                            Text("⚠️ Betaal‑herinnering banner")
+                                .font(.headline)
+                            Text("Als er abonnementen zijn met vervaldatum **vandaag** of **voorbij**, verschijnt bovenaan een banner **‘Vergeet niet te betalen’**. Deze blijft zichtbaar zolang er zulke items zijn en kan niet worden weggeklikt. Markeer een item als **Betaald** via een **veeg naar links** om de banner te laten verdwijnen.")
                         }
                         Group {
                             Text("💱 Valuta & 🎨 Thema")

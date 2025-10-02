@@ -107,7 +107,7 @@ struct HomescreenView: View {
     @AppStorage("appTheme") private var appTheme: String = "system"
     @AppStorage("dismissedSwipeHint") private var dismissedSwipeHint: Bool = false
     @AppStorage("dismissedInfoHint") private var dismissedInfoHint: Bool = false
-    @AppStorage("dismissedPayHint") private var dismissedPayHint: Bool = false
+    @AppStorage("upcomingWeeksWindow") private var upcomingWeeksWindow: Int = 1
     // Count abonnementen die aandacht nodig hebben (vervaldatum vandaag of in het verleden)
     private var needsPayCount: Int {
         abonnementen.filter { daysUntil($0.volgendeVervaldatum) <= 0 }.count
@@ -209,7 +209,7 @@ struct HomescreenView: View {
             List {
                 if !dismissedSwipeHint { swipeHintSection }
                 if !dismissedInfoHint { infoHintSection }
-                if needsPayCount > 0 && !dismissedPayHint { payHintSection }
+                if needsPayCount > 0 { payHintSection }
                 headerKPISection
                 if !binnenkortLeeg {
                     upcomingSection
@@ -367,9 +367,6 @@ struct HomescreenView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                Spacer()
-                Button("OK") { withAnimation { dismissedPayHint = true } }
-                    .buttonStyle(.bordered)
             }
             .padding(.vertical, 4)
         }
@@ -396,20 +393,25 @@ struct HomescreenView: View {
     }
 
     private var upcomingSection: some View {
-        Section("Binnenkort te betalen") {
+        Section {
             ForEach(binnenkortAbos) { abo in
-                aboRow(abo)
-                    .badge(relativeDayLabel(abo.volgendeVervaldatum))
+                aboRowUpcoming(abo)   // <-- nieuwe layout
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) { verwijder(abo) } label: { Label("Verwijder", systemImage: "trash") }
                         Button { markeerBetaald(abo) } label: { Label("Betaald", systemImage: "checkmark.circle") }
                     }
             }
+        } header: {
+            Text("Binnenkort te betalen")
+        } footer: {
+            Text("Tip: veeg naar links op een abonnement om **Betaald** te markeren.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
     }
 
     private var volledigeLijstSection: some View {
-        Section("Alle abonnementen") {
+        Section {
             ForEach(gefilterdeAbos) { abo in
                 aboRow(abo)
                     .contentShape(Rectangle())
@@ -426,6 +428,12 @@ struct HomescreenView: View {
                 let idsToDelete = offsets.map { gefilterdeAbos[$0].id }
                 withAnimation { abonnementen.removeAll { idsToDelete.contains($0.id) } }
             }
+        } header: {
+            Text("Alle abonnementen")
+        } footer: {
+            Text("Tip: veeg naar links op een abonnement om **Betaald** te markeren, of om **Bewerk**/**Verwijder** te tonen.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -458,6 +466,45 @@ struct HomescreenView: View {
         }
         .padding(.vertical, 4)
     }
+    
+    // Specifieke rij-opmaak voor "Binnenkort te betalen":
+    // bedrag helemaal rechts, met daaronder de vervaldatum.
+    private func aboRowUpcoming(_ abo: Abonnement) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: abo.iconSymbol)
+                .font(.title3)
+                .foregroundStyle(Theme.primary)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(abo.naam).font(.headline)
+                    if abo.opzegbaar {
+                        Text("Opzegbaar")
+                            .font(.caption2)
+                            .foregroundStyle(Theme.primary)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(Theme.primary.opacity(0.12), in: Capsule())
+                    }
+                }
+                Text(abo.categorie.capitalized)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 6) {
+                Text(bedragTekst(abo))
+                    .font(.headline)
+                    .foregroundStyle(Theme.primary)
+                Text(vervaldatumTekst(abo.volgendeVervaldatum))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
 
     private func kpiTile(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -484,7 +531,9 @@ struct HomescreenView: View {
     }
 
     private var binnenkortAbos: [Abonnement] {
-        gefilterdeAbos.filter { $0.isBinnen30Dagen }
+        let maxDays = upcomingWeeksWindow * 7
+        return gefilterdeAbos
+            .filter { let d = daysUntil($0.volgendeVervaldatum); return d >= 0 && d <= maxDays }
             .sorted { $0.volgendeVervaldatum < $1.volgendeVervaldatum }
     }
 
