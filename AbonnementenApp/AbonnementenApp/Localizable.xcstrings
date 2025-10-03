@@ -1,0 +1,1650 @@
+{
+  "sourceLanguage" : "nl",
+  "strings" : {
+    "%@ wordt verwijderd en kan niet ongedaan gemaakt worden." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ will be deleted and can’t be undone"
+          }
+        }
+      }
+    },
+    "⚠️ Betaal‑herinnering banner" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Payment-reminder banner"
+          }
+        }
+      }
+    },
+    "➡️ Swipen voor acties" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "➡️ Swipe for actions"
+          }
+        }
+      }
+    },
+    "💱 Valuta & 🎨 Thema" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💱 Valuta & 🎨 Theme"
+          }
+        }
+      }
+    },
+    "💾 Opslag" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💾 Storage"
+          }
+        }
+      }
+    },
+    "📅 Maand/Jaar weergave" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Month/Year view"
+          }
+        }
+      }
+    },
+    "📥 Abonnement toevoegen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📥 Add subscription"
+          }
+        }
+      }
+    },
+    "🔔 Herinneringen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔔 Reminders"
+          }
+        }
+      }
+    },
+    "🔜 Binnenkort‑venster" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔜 Upcomming‑section"
+          }
+        }
+      }
+    },
+    "🗂️ Categorieën beheren" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🗂️ Manage categories"
+          }
+        }
+      }
+    },
+    "🧭 Overzicht & totalen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🧭 Overview & totals"
+          }
+        }
+      }
+    },
+    "1 week" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 week"
+          }
+        }
+      }
+    },
+    "2 weken" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 weeks"
+          }
+        }
+      }
+    },
+    "3 weken" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 weeks"
+          }
+        }
+      }
+    },
+    "4 weken" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 weeks"
+          }
+        }
+      }
+    },
+    "Aangepast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modified"
+          }
+        }
+      }
+    },
+    "AbboBuddy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AbboBuddy"
+          }
+        }
+      }
+    },
+    "Abonnement verwijderen?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove subscription?"
+          }
+        }
+      }
+    },
+    "Accentkleur" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accentcolour"
+          }
+        }
+      }
+    },
+    "Alle abonnementen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All subscriptions"
+          }
+        }
+      }
+    },
+    "Alles wordt lokaal bewaard via **AppStorage** (UserDefaults). Je data blijft bewaard tussen app-sessies." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything is saved via **AppStorage** (UserDefaults). Your data is stored in between app-sessions"
+          }
+        }
+      }
+    },
+    "Als er abonnementen zijn met vervaldatum **vandaag** of **voorbij**, verschijnt bovenaan een banner **‘Vergeet niet te betalen’**. Deze blijft zichtbaar zolang er zulke items zijn en kan niet worden weggeklikt. Markeer een item als **Betaald** via een **veeg naar links** om de banner te laten verdwijnen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If there are subscriptions with a due date **today** or **past**, a banner appears at the top saying **‘Don’t forget to pay’**. This banner remains visible as long as such items exist and cannot be dismissed. Mark an item as **Paid** by **swiping left** to make the banner disappear."
+          }
+        }
+      }
+    },
+    "Annuleer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Automatisch betaald markeren" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark payments automatically"
+          }
+        }
+      }
+    },
+    "Automatisch op betaaldag markeren" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payments will be automatically marked as payed on due dates "
+          }
+        }
+      }
+    },
+    "Bepaal zelf wanneer items in **Binnenkort te betalen** verschijnen. In **Instellingen → Meldingen** kies je **1, 2, 3 of 4 weken**. De app toont dan alle abonnementen waarvan de vervaldatum binnen dat venster valt." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decide yourself when items appear in **Due Soon**. In **Settings → Notifications** you can choose **1, 2, 3 or 4 weeks**. The app will then show all subscriptions with a due date within that window."
+          }
+        }
+      }
+    },
+    "Betaald" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paid"
+          }
+        }
+      }
+    },
+    "Bewaar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "Bewerk" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "Binnenkort te betalen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Due soon"
+          }
+        }
+      }
+    },
+    "Bovenaan zie je totalen per **maand/jaar**. In **Overzicht** kun je filteren per categorie en de som per categorie zien." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the top of the screen you see **month/year**. In **Overview** you can filter by categorie and you can see the som by categorie"
+          }
+        }
+      }
+    },
+    "Categorie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categorie"
+          }
+        }
+      }
+    },
+    "Categorie is een lijst die je later in Instellingen kunt beheren. Zet **Zonder vervaldag** aan als je geen specifieke dag wil gebruiken; de app gebruikt dan achterliggend de **1ste dag van de maand**." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Category is a list that you can manage later in Settings. Enable **No due date** if you don’t want to use a specific day; the app will then use the **1st day of the month** in the background."
+          }
+        }
+      }
+    },
+    "Categorieën" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categories"
+          }
+        }
+      }
+    },
+    "DARKMODE" : {
+      "comment" : "Theme option: dark",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Dark"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Donker"
+          }
+        }
+      }
+    },
+    "De thema-instelling wordt app-breed toegepast. Valuta wordt gebruikt bij het tonen en opslaan van bedragen. Je kunt ook de **accentkleur** kiezen: **Standaard** gebruikt de app-kleur, **Aangepast** gebruikt je gekozen kleur." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The theme setting is applied app-wide. The currency is used when displaying and saving amounts. You can also choose the **accent color**: **Default** uses the app’s color, **Custom** uses your selected color."
+          }
+        }
+      }
+    },
+    "Details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        }
+      }
+    },
+    "DONKERMODE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Donker"
+          }
+        }
+      }
+    },
+    "Driemaandelijks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 3 months"
+          }
+        }
+      }
+    },
+    "E-mail kon niet geopend worden" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-mail couldn’t be opened"
+          }
+        }
+      }
+    },
+    "Er bestaat al een abonnement met de naam \"%@\". Kies een andere naam." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There already exists a subscription with the name “%@”. Chose an other name."
+          }
+        }
+      }
+    },
+    "Er staan %lld abonnementen met vervaldatum vandaag of eerder. Markeer ze als ‘Betaald’ wanneer je betaald hebt." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There are %lld subscriptions with due date today or earlier. Mark them as **Paid** when you paid them."
+          }
+        }
+      }
+    },
+    "Er staat 1 abonnement met vervaldatum vandaag of eerder. Markeer het als ‘Betaald’ wanneer je betaald hebt." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is one subscription with due date today or earlier. Mark them as **Paid** when you paid them."
+          }
+        }
+      }
+    },
+    "Extra info (bv. plan, kortingscode)…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extra info (for example: plan, discount code)..."
+          }
+        }
+      }
+    },
+    "FREQ_MONTHLY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maandelijks"
+          }
+        }
+      }
+    },
+    "FREQ_QUARTERLY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quarterly"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Driemaandelijks"
+          }
+        }
+      }
+    },
+    "FREQ_WEEKLY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekelijks"
+          }
+        }
+      }
+    },
+    "FREQ_YEARLY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaarlijks"
+          }
+        }
+      }
+    },
+    "Frequentie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequency"
+          }
+        }
+      }
+    },
+    "Ga naar **Home** → tik op **Toevoegen**. Vul naam, prijs, frequentie, vervaldatum en categorie in. Je kunt ook een notitie en of het opzegbaar is aangeven." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to **Home** → tap **Add**. Enter the name, price, frequency, due date, and category. You can also add a note and indicate whether it is cancellable.\n"
+          }
+        }
+      }
+    },
+    "Herinnering" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminder"
+          }
+        }
+      }
+    },
+    "Hier in **Instellingen** kun je categorieën toevoegen, verwijderen en herschikken. Wijzigingen worden overal toegepast." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here in **Settings** you can add categories, delete or rearrange them. Changes will be applied everywhere."
+          }
+        }
+      }
+    },
+    "Hoe werkt de app?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How does the app work?"
+          }
+        }
+      }
+    },
+    "Home" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        }
+      }
+    },
+    "Icoon" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icon"
+          }
+        }
+      }
+    },
+    "Info" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        }
+      }
+    },
+    "Instellingen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen %lld week%@ valt." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items appear in *Due Soon* when the due date falls within %1$lld week(s).\n"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen %1$lld week%2$@ valt."
+          }
+        }
+      }
+    },
+    "Jaarlijks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly"
+          }
+        }
+      }
+    },
+    "Je krijgt een push/herinnering %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You will get a notification %#"
+          }
+        }
+      }
+    },
+    "Kies bovenaan **Maand** of **Jaar**. Alleen het **Totaal** past zich aan; de bedragen in de lijst blijven het originele bedrag van elk abonnement. Staat **Jaar** aan, dan zie je bij elk item de prefix **‘Jaarlijks:’** voor extra duidelijkheid. Je laatste keuze wordt onthouden." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At the top, choose **Month** or **Year**. Only the **Total** adjusts; the amounts in the list remain the original amount of each subscription. If **Year** is enabled, you will see the prefix **‘Yearly:’** before each item for extra clarity. Your last choice is remembered.\n"
+          }
+        }
+      }
+    },
+    "Kies icoon" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose icon"
+          }
+        }
+      }
+    },
+    "Kies je **valuta** en stel het **thema** in (Systeem/Licht/Donker). Deze instellingen gelden app-breed." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chose **valuta** en set the **theme** in (System/Light/Dark). These settings will be applied app-wide."
+          }
+        }
+      }
+    },
+    "Kies kleur" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose color"
+          }
+        }
+      }
+    },
+    "Kopieer en mail ons op info@vancoillieithulp.be." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy and email us on info@vancoillieithulp.be"
+          }
+        }
+      }
+    },
+    "KPI_SUBSCRIPTIONS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscriptions"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnementen"
+          }
+        }
+      }
+    },
+    "KPI_TOTAL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal"
+          }
+        }
+      }
+    },
+    "KPI_TOTAL_MONTH" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total month"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal maand"
+          }
+        }
+      }
+    },
+    "KPI_TOTAL_YEAR" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total year"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal jaar"
+          }
+        }
+      }
+    },
+    "LABEL_YEARLY_AMOUNT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaarlijks: %@"
+          }
+        }
+      }
+    },
+    "LEADDAYS_1_DAY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 day in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 dag op voorhand"
+          }
+        }
+      }
+    },
+    "LEADDAYS_1_WEEK" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 week in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 week op voorhand"
+          }
+        }
+      }
+    },
+    "LEADDAYS_2_WEEKS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 weeks in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 weken op voorhand"
+          }
+        }
+      }
+    },
+    "LEADDAYS_N_DAYS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d days in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d dagen op voorhand"
+          }
+        }
+      }
+    },
+    "LEADDAYS_SAME_DAY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "on the due date"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "op de vervaldag"
+          }
+        }
+      }
+    },
+    "LEADTIME_1_DAY" : {
+      "comment" : "1 day before",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 day in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 dag op voorhand"
+          }
+        }
+      }
+    },
+    "LEADTIME_1_WEEK" : {
+      "comment" : "1 week before",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 week in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 week op voorhand"
+          }
+        }
+      }
+    },
+    "LEADTIME_2_DAYS" : {
+      "comment" : "2 days before",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 days in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 dagen op voorhand"
+          }
+        }
+      }
+    },
+    "LEADTIME_2_WEEKS" : {
+      "comment" : "2 weeks before",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 weeks in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 weken op voorhand"
+          }
+        }
+      }
+    },
+    "LEADTIME_3_DAYS" : {
+      "comment" : "3 days before",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 days in advance"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 dagen op voorhand"
+          }
+        }
+      }
+    },
+    "LEADTIME_SAME_DAY" : {
+      "comment" : "Same day",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "on the due date"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "op de dag zelf"
+          }
+        }
+      }
+    },
+    "LIGHTMODE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht"
+          }
+        }
+      }
+    },
+    "Lukt e-mail niet? Mail ons dan rechtstreeks op info@vancoillieithulp.be." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Did e-mail not work? Mail us directly on info@vancoillieithulp.be"
+          }
+        }
+      }
+    },
+    "Maandelijks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly"
+          }
+        }
+      }
+    },
+    "Meld een probleem" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report an issue"
+          }
+        }
+      }
+    },
+    "Meldingen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notfications"
+          }
+        }
+      }
+    },
+    "Meldingen worden verstuurd rond %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications will be send around %@"
+          }
+        }
+      }
+    },
+    "Met deze app beheer je al je abonnementen op één plek. Hieronder een korte uitleg:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With this app you can manage all your subscriptions on one place. Below you get a short explanation:"
+          }
+        }
+      }
+    },
+    "Naam" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "Naam bestaat al" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name already exists"
+          }
+        }
+      }
+    },
+    "Naam van abonnement (bv. Netflix)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name of subscription (ex.: Netflix)"
+          }
+        }
+      }
+    },
+    "Nieuwe categorie…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New categorie"
+          }
+        }
+      }
+    },
+    "Nog geen categorieën. Voeg er hieronder één toe." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No categories yet. Add one below."
+          }
+        }
+      }
+    },
+    "NOTIF_STATUS_CANNOT_COMPUTE_DATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Couldn't compute trigger date."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Kon trigger-datum niet berekenen."
+          }
+        }
+      }
+    },
+    "NOTIF_STATUS_NO_PERMISSION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "❌ Notification permission missing. Enable notifications in Settings > Notifications."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "❌ Notificatierechten ontbreken. Zet meldingen aan via Instellingen > Notificaties."
+          }
+        }
+      }
+    },
+    "NOTIF_STATUS_SCHEDULE_FAILED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Couldn't schedule reminder: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Kon herinnering niet plannen: %@"
+          }
+        }
+      }
+    },
+    "NOTIF_STATUS_SCHEDULED_AT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Reminder scheduled on %@ at %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Herinnering ingepland op %@ om %@."
+          }
+        }
+      }
+    },
+    "NOTIFICATION_BODY_NO_AMOUNT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Due soon."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vervalt bijna."
+          }
+        }
+      }
+    },
+    "NOTIFICATION_BODY_WITH_AMOUNT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Due soon. Amount: %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vervalt bijna. Te betalen: %@."
+          }
+        }
+      }
+    },
+    "Notitie (optioneel)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Opzegbaar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelable"
+          }
+        }
+      }
+    },
+    "Overzicht" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overview"
+          }
+        }
+      }
+    },
+    "PERIOD_MONTH" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Month"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maand"
+          }
+        }
+      }
+    },
+    "PERIOD_YEAR" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Year"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaar"
+          }
+        }
+      }
+    },
+    "Periode" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period"
+          }
+        }
+      }
+    },
+    "Periode: Jaar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period: Year"
+          }
+        }
+      }
+    },
+    "Periode: Maand" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period: Month"
+          }
+        }
+      }
+    },
+    "Prijs" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price"
+          }
+        }
+      }
+    },
+    "Prijs (bv. 12,99)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price (e.g. 12,99)"
+          }
+        }
+      }
+    },
+    "SEARCH_SUBSCRIPTION_PROMPT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search subscription…"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoek abonnement…"
+          }
+        }
+      }
+    },
+    "SELECT_ALL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle"
+          }
+        }
+      }
+    },
+    "Sluit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Standaard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "Standaardcategorieën zijn: %@. Je kunt deze lijst vrij aanpassen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard categories are: %@. You can edit this list."
+          }
+        }
+      }
+    },
+    "Stel in wanneer je een melding wil krijgen vóór de vervaldatum." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set when you want to receive a notification before the due date."
+          }
+        }
+      }
+    },
+    "Support" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        }
+      }
+    },
+    "SYSTEMMODE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Systeem"
+          }
+        }
+      }
+    },
+    "Thema" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theme"
+          }
+        }
+      }
+    },
+    "Tijdstip van melding" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time of notification"
+          }
+        }
+      }
+    },
+    "Tip" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip"
+          }
+        }
+      }
+    },
+    "Tip: veeg naar links op een abonnement om **Betaald** te markeren, of om **Bewerk**/**Verwijder** te tonen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip: swipe left on a subscription to mark as **Paid**, or **Edit** or **Delete** one."
+          }
+        }
+      }
+    },
+    "Tip: veeg naar links op een abonnement om **Betaald** te markeren." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip: swipe left on a subscription to mark as **Paid**"
+          }
+        }
+      }
+    },
+    "Toevoegen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        }
+      }
+    },
+    "Toon in \"Binnenkort te betalen\"" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in “Due soon”"
+          }
+        }
+      }
+    },
+    "Uitleg over hoe de app werkt vind je in **Instellingen → Info** (tandwiel linksboven)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can find the explanation about how the app works in **Settings → Info** (Gear icon top left)."
+          }
+        }
+      }
+    },
+    "Valuta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valuta"
+          }
+        }
+      }
+    },
+    "Veeg een abonnement naar links om **Verwijder** of **Bewerk/Betaald** te tonen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swipe a subscription to the left to show **Delete** or **Edit/Paid**."
+          }
+        }
+      }
+    },
+    "Veeg een rij naar **links** om **Bewerk/Betaald** en **Verwijder** te tonen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swipe a subscription to the left to show **Delete** or **Edit/Paid**."
+          }
+        }
+      }
+    },
+    "Vergeet niet te betalen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don’t forget to pay"
+          }
+        }
+      }
+    },
+    "Verwijder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
+    },
+    "Voeg toe" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        }
+      }
+    },
+    "Volg categorie (automatisch)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow categorie (automatically)"
+          }
+        }
+      }
+    },
+    "Volgende vervaldatum" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next due date "
+          }
+        }
+      }
+    },
+    "Wanneer dit aan staat, worden abonnementen automatisch als **Betaald** gemarkeerd zodra de vervaldag aanbreekt (of zodra je de app opent als je de betaaldag gemist hebt)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When this is enabled, subscriptions are automatically marked as **Paid** as soon as the due date arrives (or the next time you open the app if you missed the payment date)."
+          }
+        }
+      }
+    },
+    "Weergave" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View"
+          }
+        }
+      }
+    },
+    "Wekelijks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly"
+          }
+        }
+      }
+    },
+    "Welkom bij Abonnementen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to AbboBuddy"
+          }
+        }
+      }
+    },
+    "Wist je dit?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Did you know this?"
+          }
+        }
+      }
+    },
+    "Zonder vervaldag" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Without due date"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

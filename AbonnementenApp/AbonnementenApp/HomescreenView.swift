@@ -103,7 +103,19 @@ private func scheduleSubscriptionReminder(name: String, dueDate: Date, amountTex
 
 struct HomescreenView: View {
     // MARK: - Types
-    enum Periode: String, CaseIterable, Identifiable { case maand = "Maand", jaar = "Jaar"; var id: String { rawValue } }
+    enum Periode: String, CaseIterable, Identifiable {
+        case maand
+        case jaar
+        var id: String { rawValue }
+        var localized: String {
+            switch self {
+            case .maand:
+                return NSLocalizedString("PERIOD_MONTH", comment: "Segment label for Month")
+            case .jaar:
+                return NSLocalizedString("PERIOD_YEAR", comment: "Segment label for Year")
+            }
+        }
+    }
 
     // MARK: - State
     @AppStorage("periodeRaw") private var periodeRaw: String = Periode.maand.rawValue
@@ -157,7 +169,7 @@ struct HomescreenView: View {
         var prijs: Double = 0
         var frequentie: Frequentie = .maandelijks
         var volgendeVervaldatum: Date = Date()
-        var categorie: String = "Overig"
+        var categorie: String = "Other"
         var categorieIcon: String? = nil
         var opzegbaar: Bool = true
         var notitie: String? = nil
@@ -284,7 +296,7 @@ struct HomescreenView: View {
                     }
                 }
             }
-            .searchable(text: $zoektekst, isPresented: $isSearchActive, placement: .navigationBarDrawer(displayMode: .always), prompt: "Zoek abonnement…")
+            .searchable(text: $zoektekst, isPresented: $isSearchActive, placement: .navigationBarDrawer(displayMode: .always), prompt: Text(NSLocalizedString("SEARCH_SUBSCRIPTION_PROMPT", comment: "Search field placeholder")))
             .onAppear { periode = Periode(rawValue: periodeRaw) ?? .maand; loadAbonnementen(); loadCategorieen(); autoMarkDueAsPaidIfEnabled() }
             .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in loadCategorieen() }
 #if canImport(UIKit)
@@ -447,15 +459,15 @@ struct HomescreenView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Picker("Periode", selection: $periode) {
-                        ForEach(Periode.allCases) { p in Text(p.rawValue).tag(p) }
+                        ForEach(Periode.allCases) { p in Text(p.localized).tag(p) }
                     }
                     .pickerStyle(.segmented)
                     .tint(Theme.primary)
                 }
 
                 HStack(spacing: 12) {
-                    kpiTile(title: "Totaal", value: totaalGeformatteerd)
-                    kpiTile(title: "Abonnementen", value: "\(gefilterdeAbos.count)")
+                    kpiTile(title: NSLocalizedString("KPI_TOTAL", comment: "KPI title: Total"), value: totaalGeformatteerd)
+                    kpiTile(title: NSLocalizedString("KPI_SUBSCRIPTIONS", comment: "KPI title: Subscriptions count"), value: "\(gefilterdeAbos.count)")
                 }
             }
             .padding(.vertical, 4)
@@ -632,10 +644,14 @@ struct HomescreenView: View {
 
     private func frequentieTekst(_ f: Frequentie) -> String {
         switch f {
-        case .wekelijks:       return "Wekelijks"
-        case .maandelijks:     return "Maandelijks"
-        case .driemaandelijks: return "Driemaandelijks"
-        case .jaarlijks:       return "Jaarlijks"
+        case .wekelijks:
+            return NSLocalizedString("FREQ_WEEKLY", comment: "Frequency label: Weekly")
+        case .maandelijks:
+            return NSLocalizedString("FREQ_MONTHLY", comment: "Frequency label: Monthly")
+        case .driemaandelijks:
+            return NSLocalizedString("FREQ_QUARTERLY", comment: "Frequency label: Quarterly (every three months)")
+        case .jaarlijks:
+            return NSLocalizedString("FREQ_YEARLY", comment: "Frequency label: Yearly")
         }
     }
 

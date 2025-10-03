@@ -42,48 +42,47 @@ enum Frequentie: String, CaseIterable, Codable {
 
 struct CategoryIconOptions {
     static let options: [(name: String, symbol: String)] = [
-        ("Overig", "square.grid.2x2.fill"),
+        ("Other", "square.grid.2x2.fill"),
         ("Streaming", "play.tv.fill"),
         ("Video", "play.rectangle.fill"),
-        ("Muziek", "music.note.list"),
+        ("Music", "music.note.list"),
         ("Podcast", "headphones"),
         ("Cloud", "icloud.fill"),
-        ("Opslag", "externaldrive.fill"),
+        ("Storage", "externaldrive.fill"),
         ("Hosting", "server.rack"),
         ("Software", "app.badge.fill"),
-        ("Productiviteit", "hammer"),
+        ("Productivity", "hammer"),
         ("Gaming", "gamecontroller.fill"),
-        ("Nieuws", "newspaper.fill"),
-        ("Boeken", "book.fill"),
-        ("Bibliotheek", "books.vertical.fill"),
+        ("News", "newspaper.fill"),
+        ("Books", "book.fill"),
+        ("Library", "books.vertical.fill"),
         ("Sport", "sportscourt.fill"),
         ("Fitness", "figure.run"),
-        ("Gezondheid", "heart.fill"),
-        ("Medisch", "cross.case.fill"),
-        ("Energie", "bolt.fill"),
+        ("Health", "heart.fill"),
+        ("Medical", "cross.case.fill"),
+        ("Energy", "bolt.fill"),
         ("Gas", "flame.fill"),
         ("Water", "drop.fill"),
         ("Internet", "globe"),
         ("Netwerk", "network"),
-        ("Beveiliging", "lock.fill"),
+        ("Security", "lock.fill"),
         ("VPN", "shield.fill"),
-        ("Telefoon", "phone.fill"),
-        ("Mobiel", "iphone"),
+        ("Phone", "phone.fill"),
         ("Data", "simcard.fill"),
         ("E-mail", "envelope.fill"),
-        ("Sociaal", "person.2.fill"),
-        ("Reizen", "airplane"),
-        ("Auto", "car.fill"),
-        ("Openbaar vervoer", "tram.fill"),
-        ("Brandstof", "fuelpump.fill"),
-        ("Woning", "house.fill"),
-        ("Financiën", "creditcard.fill"),
-        ("Abonnement/Factuur", "banknote.fill"),
-        ("Eten & drinken", "fork.knife"),
-        ("Boodschappen", "cart.fill"),
-        ("Levering", "shippingbox.fill"),
-        ("Foto/Media", "photo.stack"),
-        ("Onderwijs", "graduationcap.fill")
+        ("social", "person.2.fill"),
+        ("Travel", "airplane"),
+        ("Car", "car.fill"),
+        ("Public transport", "tram.fill"),
+        ("Fuel", "fuelpump.fill"),
+        ("House", "house.fill"),
+        ("Finance", "creditcard.fill"),
+        ("Subscription", "banknote.fill"),
+        ("Food & Drinks", "fork.knife"),
+        ("Groceries", "cart.fill"),
+        ("Delivery", "shippingbox.fill"),
+        ("Photo/Media", "photo.stack"),
+        ("Education", "graduationcap.fill")
     ]
 }
 
@@ -92,7 +91,7 @@ struct CategoryIcon {
     static func symbol(for category: String) -> String {
         let key = category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         switch key {
-        case "overig", "overige", "other", "misc": return "square.grid.2x2.fill"
+        case "Other", "overige", "other", "misc": return "square.grid.2x2.fill"
         case "streaming", "tv": return "play.tv.fill"
         case "video": return "play.rectangle.fill"
         case "muziek", "music": return "music.note.list"
@@ -101,38 +100,37 @@ struct CategoryIcon {
         case "opslag", "storage": return "externaldrive.fill"
         case "hosting", "server": return "server.rack"
         case "software", "apps": return "app.badge.fill"
-        case "productiviteit", "productivity": return "hammer"
-        case "gaming", "games": return "gamecontroller.fill"
-        case "nieuws", "news": return "newspaper.fill"
-        case "boeken", "book": return "book.fill"
-        case "bibliotheek", "library": return "books.vertical.fill"
+        case "productivity": return "hammer"
+        case "games": return "gamecontroller.fill"
+        case "news": return "newspaper.fill"
+        case "books": return "book.fill"
+        case "library": return "books.vertical.fill"
         case "sport": return "sportscourt.fill"
         case "fitness": return "figure.run"
-        case "gezondheid", "health": return "heart.fill"
-        case "medisch", "medical": return "cross.case.fill"
-        case "energie", "electricity", "stroom": return "bolt.fill"
+        case "health": return "heart.fill"
+        case "medical": return "cross.case.fill"
+        case "energy", "electricity", "stroom": return "bolt.fill"
         case "gas": return "flame.fill"
         case "water": return "drop.fill"
         case "internet": return "globe"
-        case "netwerk", "network": return "network"
-        case "beveiliging", "security": return "lock.fill"
+        case "network": return "network"
+        case "security": return "lock.fill"
         case "vpn": return "shield.fill"
-        case "telefoon", "phone": return "phone.fill"
-        case "mobiel", "gsm", "mobile": return "iphone"
+        case "phone": return "phone.fill"
         case "data", "sim": return "simcard.fill"
         case "e-mail", "email", "mail": return "envelope.fill"
-        case "sociaal", "social": return "person.2.fill"
+        case "social": return "person.2.fill"
         case "reizen", "travel": return "airplane"
         case "auto", "car": return "car.fill"
-        case "openbaar vervoer", "ov", "tram": return "tram.fill"
+        case "public transport", "ov", "tram": return "tram.fill"
         case "brandstof", "fuel": return "fuelpump.fill"
         case "woning", "huis", "home": return "house.fill"
         case "financiën", "finance", "bank": return "creditcard.fill"
-        case "abonnement", "factuur", "billing", "invoice": return "banknote.fill"
-        case "eten", "drinken", "food": return "fork.knife"
+        case "subscription", "factuur", "billing", "invoice": return "banknote.fill"
+        case "food & drinks", "drinken", "food": return "fork.knife"
         case "boodschappen", "groceries": return "cart.fill"
         case "levering", "delivery", "pakket": return "shippingbox.fill"
-        case "foto", "media", "photos": return "photo.stack"
+        case "photo", "media", "photos": return "photo.stack"
         case "onderwijs", "education", "school": return "graduationcap.fill"
         default: return "square.grid.2x2.fill"
         }
@@ -232,7 +230,7 @@ extension Abonnement {
 struct CategoriesDefaults {
     static let key = "categories"
     static let fallback: [String] = [
-        "Streaming", "Muziek", "Cloud", "Software", "Sport", "Internet", "Overig"
+        "Streaming", "Muziek", "Cloud", "Software", "Sport", "Internet", "Other"
     ]
     static func load() -> [String] {
         if let data = UserDefaults.standard.data(forKey: key),

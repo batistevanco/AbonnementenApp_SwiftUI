@@ -64,12 +64,20 @@ struct instellingenView: View {
     @State private var mailFallbackFailed: Bool = false
 
     private let leadTimeOptions: [(label: String, days: Int)] = [
-        ("Op de dag zelf", 0), ("1 dag voordien", 1), ("2 dagen voordien", 2),
-        ("3 dagen voordien", 3), ("1 week voordien", 7), ("2 weken voordien", 14)
+        (NSLocalizedString("LEADTIME_SAME_DAY", comment: "Same day"), 0),
+        (NSLocalizedString("LEADTIME_1_DAY", comment: "1 day before"), 1),
+        (NSLocalizedString("LEADTIME_2_DAYS", comment: "2 days before"), 2),
+        (NSLocalizedString("LEADTIME_3_DAYS", comment: "3 days before"), 3),
+        (NSLocalizedString("LEADTIME_1_WEEK", comment: "1 week before"), 7),
+        (NSLocalizedString("LEADTIME_2_WEEKS", comment: "2 weeks before"), 14)
     ]
 
     private let currencyOptions: [String] = ["EUR", "USD", "GBP", "CHF", "JPY"]
-    private let themeOptions: [(label: String, key: String)] = [("Systeem", "system"), ("Licht", "light"), ("Donker", "dark")]
+    private let themeOptions: [(label: String, key: String)] = [
+        (NSLocalizedString("SYSTEMMODE", comment: "Theme option: follow system"), "system"),
+        (NSLocalizedString("LIGHTMODE", comment: "Theme option: light"), "light"),
+        (NSLocalizedString("DARKMODE", comment: "Theme option: dark"), "dark")
+    ]
 
     private var isPreview: Bool { ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" }
 
@@ -83,7 +91,7 @@ struct instellingenView: View {
         let model = "Unknown"
         #endif
         let currency = currencyCode
-        return "Beschrijf hier je probleem...\n\n— App info —\nThema: \(appTheme)\nValuta: \(currency)\n— Device —\nModel: \(model)\nSysteem: \(system)\n"
+        return "Write your issue here...\n\n— App info —\nThema: \(appTheme)\nValuta: \(currency)\n— Device —\nModel: \(model)\nSysteem: \(system)\n"
     }
 
     var body: some View {
@@ -516,12 +524,18 @@ struct instellingenView: View {
     func scheduleSubscriptionReminder(name: String, dueDate: Date, amountText: String? = nil) {
         ensureNotificationPermission { granted in
             guard granted else {
-                DispatchQueue.main.async { self.notifStatus = "❌ Notificatierechten ontbreken. Zet meldingen aan via Instellingen > Notificaties." }
+                DispatchQueue.main.async {
+                    self.notifStatus = NSLocalizedString("NOTIF_STATUS_NO_PERMISSION",
+                                                         comment: "Shown when notification permissions are missing")
+                }
                 return
             }
 
             guard let triggerDate = preferredTriggerDate(for: dueDate, leadDays: self.notifLeadDays, hour: self.notifHour, minute: self.notifMinute) else {
-                DispatchQueue.main.async { self.notifStatus = "⚠️ Kon trigger-datum niet berekenen." }
+                DispatchQueue.main.async {
+                    self.notifStatus = NSLocalizedString("NOTIF_STATUS_CANNOT_COMPUTE_DATE",
+                                                         comment: "Shown when trigger date could not be computed")
+                }
                 return
             }
 
@@ -539,9 +553,14 @@ struct instellingenView: View {
             content.title = appDisplayName()
             content.subtitle = name
             if let amountText = amountText, !amountText.isEmpty {
-                content.body = "Vervalt bijna. Te betalen: \(amountText)."
+                // Localized: "Your subscription is due soon. Amount: %@."
+                content.body = String(format: NSLocalizedString("NOTIFICATION_BODY_WITH_AMOUNT",
+                                                                comment: "Notification body shown when an amount is available"),
+                                      amountText)
             } else {
-                content.body = "Vervalt bijna."
+                // Localized: "Your subscription is due soon."
+                content.body = NSLocalizedString("NOTIFICATION_BODY_NO_AMOUNT",
+                                                 comment: "Notification body shown when no amount is provided")
             }
             content.sound = .default
 
@@ -553,11 +572,15 @@ struct instellingenView: View {
             UNUserNotificationCenter.current().add(request) { error in
                 DispatchQueue.main.async {
                     if let error = error {
-                        self.notifStatus = "⚠️ Kon herinnering niet plannen: \(error.localizedDescription)"
+                        self.notifStatus = String(format: NSLocalizedString("NOTIF_STATUS_SCHEDULE_FAILED",
+                                                                            comment: "Shown when scheduling the reminder failed with an error"),
+                                                  error.localizedDescription)
                     } else {
                         let hm = String(format: "%02d:%02d", self.notifHour, self.notifMinute)
                         let df = DateFormatter(); df.dateStyle = .medium; df.timeStyle = .none
-                        self.notifStatus = "✅ Herinnering ingepland op \(df.string(from: finalDate)) om \(hm)."
+                        self.notifStatus = String(format: NSLocalizedString("NOTIF_STATUS_SCHEDULED_AT",
+                                                                            comment: "Shown when a reminder was scheduled; placeholders are date and time"),
+                                                  df.string(from: finalDate), hm)
                     }
                 }
             }
@@ -646,11 +669,22 @@ struct instellingenView: View {
     // MARK: - Helpers
     private func labelForLeadDays(_ days: Int) -> String {
         switch days {
-        case 0: return "op de vervaldag"
-        case 1: return "1 dag op voorhand"
-        case 7: return "1 week op voorhand"
-        case 14: return "2 weken op voorhand"
-        default: return "\(days) dagen op voorhand"
+        case 0:
+            return NSLocalizedString("LEADDAYS_SAME_DAY",
+                                     comment: "Notification lead time: on due date")
+        case 1:
+            return NSLocalizedString("LEADDAYS_1_DAY",
+                                     comment: "Notification lead time: 1 day in advance")
+        case 7:
+            return NSLocalizedString("LEADDAYS_1_WEEK",
+                                     comment: "Notification lead time: 1 week in advance")
+        case 14:
+            return NSLocalizedString("LEADDAYS_2_WEEKS",
+                                     comment: "Notification lead time: 2 weeks in advance")
+        default:
+            return String(format: NSLocalizedString("LEADDAYS_N_DAYS",
+                                                    comment: "Notification lead time: N days in advance"),
+                          days)
         }
     }
 }

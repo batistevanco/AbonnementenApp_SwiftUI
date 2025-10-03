@@ -18,22 +18,22 @@ struct overzichtView: View {
     @State private var abonnementen: [Abonnement] = []
     @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
     @State private var categorieen: [String] = []
-    @State private var gekozenCategorie: String = "Alle"
+    @State private var gekozenCategorie: String = "All"
     @AppStorage("overviewPeriodIsYear") private var periodeIsJaar: Bool = false // false=maand, true=jaar (persisted)
 
     private var preferredScheme: ColorScheme? {
         switch appTheme { case "light": return .light; case "dark": return .dark; default: return nil }
     }
 
-    private var categorieOpties: [String] { ["Alle"] + categorieen.sorted { $0.localizedCompare($1) == .orderedAscending } }
+    private var categorieOpties: [String] { ["All"] + categorieen.sorted { $0.localizedCompare($1) == .orderedAscending } }
 
     // MARK: - Body
     var body: some View {
         NavigationStack {
             List {
                 filterHeader
-                if gekozenCategorie == "Alle" {
-                    // Toon alle categorieën met subtotaal per categorie
+                if gekozenCategorie == "All" {
+                    // Toon All categorieën met subtotaal per categorie
                     ForEach(gesorteerdeCategorieen, id: \.self) { cat in
                         Section(header: sectionHeader(cat)) {
                             ForEach(items(in: cat)) { abo in
@@ -93,7 +93,9 @@ struct overzichtView: View {
                 .toggleStyle(.switch)
 
                 // KPI voor de huidige selectie
-                kpiTile(title: "Totaal \(periodeIsJaar ? "jaar" : "maand")", value: currency(totaalHuidigeSelectie))
+                kpiTile(title: NSLocalizedString(periodeIsJaar ? "KPI_TOTAL_YEAR" : "KPI_TOTAL_MONTH",
+                                                 comment: "KPI title: Total for the selected period (month/year)"),
+                        value: currency(totaalHuidigeSelectie))
             }
             .padding(.vertical, 4)
         }
@@ -121,7 +123,11 @@ struct overzichtView: View {
             }
             Spacer()
             let bedrag = currency(periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag)
-            Text(periodeIsJaar ? "Jaarlijks: \(bedrag)" : bedrag)
+            Text(periodeIsJaar
+                 ? String(format: NSLocalizedString("LABEL_YEARLY_AMOUNT",
+                                                    comment: "Label prefix for yearly amount"),
+                          bedrag)
+                 : bedrag)
                 .font(.body)
                 .fontWeight(.semibold)
                 .foregroundStyle(Theme.primary)
@@ -145,7 +151,7 @@ struct overzichtView: View {
     }
 
     private func items(in categorie: String) -> [Abonnement] {
-        abonnementen.filter { categorie == "Alle" ? true : $0.categorie == categorie }
+        abonnementen.filter { categorie == "All" ? true : $0.categorie == categorie }
             .sorted { $0.naam.localizedCaseInsensitiveCompare($1.naam) == .orderedAscending }
     }
 
@@ -160,7 +166,7 @@ struct overzichtView: View {
     }
 
     private var totaalHuidigeSelectie: Double {
-        if gekozenCategorie == "Alle" {
+        if gekozenCategorie == "All" {
             return periodeIsJaar ? abonnementen.map { $0.jaarBedrag }.reduce(0, +)
                                  : abonnementen.map { $0.maandBedrag }.reduce(0, +)
         } else {
@@ -179,10 +185,14 @@ struct overzichtView: View {
 
     private func frequentieTekst(_ f: Frequentie) -> String {
         switch f {
-        case .wekelijks: return "Wekelijks"
-        case .maandelijks: return "Maandelijks"
-        case .driemaandelijks: return "Driemaandelijks"
-        case .jaarlijks: return "Jaarlijks"
+        case .wekelijks:
+            return NSLocalizedString("FREQ_WEEKLY", comment: "Frequency label: Weekly")
+        case .maandelijks:
+            return NSLocalizedString("FREQ_MONTHLY", comment: "Frequency label: Monthly")
+        case .driemaandelijks:
+            return NSLocalizedString("FREQ_QUARTERLY", comment: "Frequency label: Quarterly (every three months)")
+        case .jaarlijks:
+            return NSLocalizedString("FREQ_YEARLY", comment: "Frequency label: Yearly")
         }
     }
 }
