@@ -91,7 +91,7 @@ struct CategoryIcon {
     static func symbol(for category: String) -> String {
         let key = category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         switch key {
-        case "Other", "overige", "other", "misc": return "square.grid.2x2.fill"
+        case "Other", "misc": return "square.grid.2x2.fill"
         case "streaming", "tv": return "play.tv.fill"
         case "video": return "play.rectangle.fill"
         case "muziek", "music": return "music.note.list"
