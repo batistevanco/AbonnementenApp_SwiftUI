@@ -246,7 +246,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Payments will be automatically marked as payed on due dates "
+            "value" : "Automatically mark payments as paid on due dates "
           }
         }
       }
