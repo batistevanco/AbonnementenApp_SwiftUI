@@ -1324,6 +1324,108 @@
         }
       }
     },
+    "REL_DAY_AFTER_TOMORROW" : {
+      "comment" : "Relative date: day after tomorrow",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day after tomorrow"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overmorgen"
+          }
+        }
+      }
+    },
+    "REL_IN_N_DAYS_SHORT" : {
+      "comment" : "Relative date: in N days (short)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In %d d"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Over %d d"
+          }
+        }
+      }
+    },
+    "REL_N_DAYS_AGO" : {
+      "comment" : "Relative date: N days ago",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d d ago"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d d geleden"
+          }
+        }
+      }
+    },
+    "REL_TODAY" : {
+      "comment" : "Relative date: today",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vandaag"
+          }
+        }
+      }
+    },
+    "REL_TOMORROW" : {
+      "comment" : "Relative date: tomorrow",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen"
+          }
+        }
+      }
+    },
+    "REL_YESTERDAY" : {
+      "comment" : "Relative date: yesterday",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yesterday"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gisteren"
+          }
+        }
+      }
+    },
     "SEARCH_SUBSCRIPTION_PROMPT" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -236,13 +236,17 @@ struct HomescreenView: View {
         let d = daysUntil(date)
         switch d {
         case ..<0:
-            return d == -1 ? "Gisteren" : "\(abs(d)) d geleden"
+            if d == -1 {
+                return NSLocalizedString("REL_YESTERDAY", comment: "Relative date: yesterday")
+            } else {
+                return String(format: NSLocalizedString("REL_N_DAYS_AGO", comment: "Relative date: N days ago"), abs(d))
+            }
         case 0:
-            return "Vandaag"
+            return NSLocalizedString("REL_TODAY", comment: "Relative date: today")
         case 1:
-            return "Morgen"
+            return NSLocalizedString("REL_TOMORROW", comment: "Relative date: tomorrow")
         default:
-            return "Over \(d) d"
+            return String(format: NSLocalizedString("REL_IN_N_DAYS_SHORT", comment: "Relative date: in N days (short)"), d)
         }
     }
     // Label voor "Binnenkort": Vandaag/Morgen/Overmorgen, anders bv. "7 okt"
@@ -250,10 +254,17 @@ struct HomescreenView: View {
         let d = daysUntil(date)
         switch d {
         case ..<0:
-            return d == -1 ? "Gisteren" : "\(abs(d)) d geleden"
-        case 0:  return "Vandaag"
-        case 1:  return "Morgen"
-        case 2:  return "Overmorgen"
+            if d == -1 {
+                return NSLocalizedString("REL_YESTERDAY", comment: "Relative date: yesterday")
+            } else {
+                return String(format: NSLocalizedString("REL_N_DAYS_AGO", comment: "Relative date: N days ago"), abs(d))
+            }
+        case 0:
+            return NSLocalizedString("REL_TODAY", comment: "Relative date: today")
+        case 1:
+            return NSLocalizedString("REL_TOMORROW", comment: "Relative date: tomorrow")
+        case 2:
+            return NSLocalizedString("REL_DAY_AFTER_TOMORROW", comment: "Relative date: day after tomorrow")
         default:
             let f = DateFormatter()
             f.locale = Locale(identifier: Locale.preferredLanguages.first ?? "nl_BE")
