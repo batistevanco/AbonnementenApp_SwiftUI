@@ -292,9 +292,6 @@ struct HomescreenView: View {
             .scrollDismissesKeyboard(.immediately)
             .navigationTitle("AbboBuddy")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    EditButton()
-                }
                 ToolbarItem(placement: .topBarLeading) {
                     NavigationLink { instellingenView() } label: { Image(systemName: "gearshape").foregroundStyle(Theme.primary) }
                 }
@@ -515,10 +512,6 @@ struct HomescreenView: View {
                         } label: { Label("Verwijder", systemImage: "trash") }
                         Button { openEdit(abo) } label: { Label("Bewerk", systemImage: "pencil") }
                     }
-            }
-            .onDelete { offsets in
-                let idsToDelete = offsets.map { gefilterdeAbos[$0].id }
-                withAnimation { abonnementen.removeAll { idsToDelete.contains($0.id) } }
             }
         } header: {
             Text("Alle abonnementen")
