@@ -1561,8 +1561,14 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tip: swipe left on a subscription to **Edit** or **Delete** one."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
             "state" : "translated",
-            "value" : "Tip: swipe left on a subscription to mark as **Paid**, or **Edit** or **Delete** one."
+            "value" : "Tip: veeg naar links op een abonnement om **Bewerk** of **Verwijder** te tonen."
           }
         }
       }
