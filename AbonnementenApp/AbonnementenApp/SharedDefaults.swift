@@ -225,6 +225,17 @@ extension Abonnement {
 }
 
 
+// MARK: - Appearance Defaults
+enum AppearanceMode: String, CaseIterable, Codable { case system, light, dark }
+
+struct AppearanceDefaults {
+    static let key = "appearanceMode"
+    /// Register a default appearance for first install without overwriting user changes later
+    static func register() {
+        UserDefaults.standard.register(defaults: [key: AppearanceMode.light.rawValue])
+    }
+}
+
 // MARK: - Shared Defaults
 
 struct CategoriesDefaults {

@@ -434,22 +434,79 @@ private struct InfoSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Welkom bij AbboBuddy AI")
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Alles wat je met AbboBuddy AI kunt doen")
                         .font(.title2).bold()
-                    Text("Gebruik deze assistent om snel info te krijgen en acties uit te voeren op je abonnementen.")
-                    Divider()
+                    Text("Momenteel in BETA")
+                        .font(.title3)
+
+                    // MARK: – Totale bedragen
                     Group {
-                        Text("💬 Voorbeelden")
+                        Text("💰 Totale bedragen")
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Wat is mijn totaal deze maand?", systemImage: "questionmark.bubble")
-                            Label("Wat vervalt binnenkort?", systemImage: "calendar")
-                            Label("Markeer Netflix als betaald", systemImage: "checkmark.circle")
-                            Label("Voeg Spotify €10 maandelijks toe op 1 november", systemImage: "plus.circle")
-                            Label("Wat bespaar als ik Netflix en Disney+ opzeg?", systemImage: "chart.line.uptrend.xyaxis")
+                            Label("Totaal deze maand", systemImage: "sum")
+                            Label("Totaal per jaar", systemImage: "sum")
                         }
                     }
+
+                    Divider()
+
+                    // MARK: – Vervaldagen
+                    Group {
+                        Text("📅 Vervaldagen")
+                            .font(.headline)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Wat vervalt binnenkort? (standaard: 7 dagen)", systemImage: "calendar")
+                            Label("Wat vervalt binnen 14 dagen?", systemImage: "calendar")
+                            Label("Aankomend in 3 dagen", systemImage: "calendar")
+                        }
+                    }
+
+                    Divider()
+
+                    // MARK: – Markeer als betaald
+                    Group {
+                        Text("✅ Markeer als betaald")
+                            .font(.headline)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Markeer Netflix als betaald", systemImage: "checkmark.circle")
+                            Label("Markeer Netflix als betaald op 1/11/2025", systemImage: "checkmark.circle")
+                            Label("Markeer Netflix als betaald vandaag of morgen", systemImage: "checkmark.circle")
+                        }
+                        Text("Tip: bij ‘betaald’ schuift de vervaldatum automatisch door naar de volgende periode (maandelijks/jaarlijks).")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Divider()
+
+                    // MARK: – Abonnement toevoegen
+                    Group {
+                        Text("➕ Abonnement toevoegen")
+                            .font(.headline)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Voeg Spotify €10 maandelijks toe op 1 november", systemImage: "plus.circle")
+                            Label("Voeg iCloud €36 jaarlijks toe op 01-11-2025", systemImage: "plus.circle")
+                            Label("Voeg Audible €9,99 maandelijks toe [categorie Boeken]", systemImage: "plus.circle")
+                        }
+                        
+                    }
+
+                    Divider()
+
+                    // MARK: – Bespaar-scenario
+                    Group {
+                        Text("💸 Bespaar-scenario")
+                            .font(.headline)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Wat bespaar als ik Netflix en Disney+ opzeg?", systemImage: "chart.line.uptrend.xyaxis")
+                        }
+                        Text("De assistent rekent besparing per maand en een schatting per jaar.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
                 }
                 .padding(20)
             }

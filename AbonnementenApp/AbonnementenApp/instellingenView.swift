@@ -15,7 +15,7 @@ import MessageUI
 private enum SettingsKeys {
     static let notifLeadDays = "notifLeadDays"
     static let currencyCode   = "currencyCode"
-    static let appTheme       = "appTheme"
+    static let appTheme       = "appearanceMode"
     static let accentMode     = "accentMode"       // "default" | "custom"
     static let accentCustomColor = "accentCustomColor" // Data (JSON-encoded RGBA)
     static let notifHour      = "notifHour"

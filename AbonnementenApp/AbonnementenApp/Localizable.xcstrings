@@ -21,6 +21,26 @@
         }
       }
     },
+    "✅ Markeer als betaald" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Mark as paid"
+          }
+        }
+      }
+    },
+    "➕ Abonnement toevoegen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "➕ Add subscription"
+          }
+        }
+      }
+    },
     "➡️ Swipen voor acties" : {
       "localizations" : {
         "en" : {
@@ -31,12 +51,12 @@
         }
       }
     },
-    "💬 Voorbeelden" : {
+    "💰 Totale bedragen" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "💬 Examples"
+            "value" : "💰 Total values"
           }
         }
       }
@@ -47,6 +67,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "💱 Valuta & 🎨 Theme"
+          }
+        }
+      }
+    },
+    "💸 Bespaar-scenario" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💸 Saving-scenario"
           }
         }
       }
@@ -67,6 +97,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "📅 Month/Year view"
+          }
+        }
+      }
+    },
+    "📅 Vervaldagen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Due dates"
           }
         }
       }
@@ -112,7 +152,14 @@
       }
     },
     "🤖" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🤖"
+          }
+        }
+      }
     },
     "🧭 Overzicht & totalen" : {
       "localizations" : {
@@ -174,6 +221,16 @@
         }
       }
     },
+    "Aankomend in 3 dagen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Due in 3 days"
+          }
+        }
+      }
+    },
     "AbboBuddy" : {
       "localizations" : {
         "en" : {
@@ -214,12 +271,73 @@
         }
       }
     },
+    "ADD_FAIL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add failed. Does a subscription with that name already exist?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toevoegen is niet gelukt. Bestaat er al een abonnement met die naam?"
+          }
+        }
+      }
+    },
+    "ADDED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ added for %@ %@, first due %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ toegevoegd voor %@ %@, eerste vervaldatum %@."
+          }
+        }
+      }
+    },
+    "ADDED_WITH_CATH" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ added for %@ %@, first due %@, category %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ toegevoegd voor %@ %@, eerste vervaldatum %@, categorie %@."
+          }
+        }
+      }
+    },
     "Alle abonnementen" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "All subscriptions"
+          }
+        }
+      }
+    },
+    "Alles wat je met AbboBuddy AI kunt doen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything you can do with AbboBuddy AI"
           }
         }
       }
@@ -379,7 +497,7 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dark"
           }
         },
@@ -387,6 +505,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Donker"
+          }
+        }
+      }
+    },
+    "De assistent rekent besparing per maand en een schatting per jaar." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The assistant calculates how much savings a month and per year you can do."
           }
         }
       }
@@ -438,6 +566,40 @@
         }
       }
     },
+    "DUE_LIST_HEADER" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Due in the next %d days:\n"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vervallen binnen %d dagen:\n"
+          }
+        }
+      }
+    },
+    "DUE_NONE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No subscriptions due in the next %d days."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen abonnementen die vervallen binnen %d dagen."
+          }
+        }
+      }
+    },
     "E-mail kon niet geopend worden" : {
       "localizations" : {
         "en" : {
@@ -474,6 +636,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "There is one subscription with due date today or earlier. Mark them as **Paid** when you paid them."
+          }
+        }
+      }
+    },
+    "EXAMPLES_TEXT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Examples: ‘total this month’, ‘what’s due soon?’, ‘mark Netflix as paid’, ‘add Spotify €10 monthly on 1/11/2025’, ‘how much do I save if I cancel Netflix and Disney+?’"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voorbeelden: ‘totaal deze maand’, ‘wat vervalt binnenkort?’, ‘markeer Netflix als betaald’, ‘voeg Spotify €10 maandelijks toe op 1/11/2025’, ‘wat bespaar als ik Netflix en Disney+ opzeg?’"
           }
         }
       }
@@ -576,22 +755,29 @@
         }
       }
     },
-    "Gebruik deze assistent om snel info te krijgen en acties uit te voeren op je abonnementen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Use this assistant to get quick info and to run quick actions on your subscriptions."
-          }
-        }
-      }
-    },
     "Gereed" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Done"
+          }
+        }
+      }
+    },
+    "GREETING_TEXT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi!\n\nAsk a question (e.g. ‘total this month’, ‘what’s due soon?’) or give a command (‘mark Netflix as paid’, ‘add Spotify €10 monthly on Nov 1’)."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoi!\\n\\nStel een vraag (bv. ‘totaal deze maand’, ‘wat vervalt binnenkort?’) of geef een opdracht (‘markeer Netflix als betaald’, ‘voeg Spotify €10 maandelijks toe op 1 november’)."
           }
         }
       }
@@ -1071,12 +1257,83 @@
         }
       }
     },
+    "MARKED_PAID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ marked as paid."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ gemarkeerd als betaald."
+          }
+        }
+      }
+    },
+    "MARKED_PAID_FAIL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I couldn’t find that subscription. Try: ‘mark <name> as paid’."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ik kon het juiste abonnement niet vinden. Probeer: ‘markeer <naam> als betaald’."
+          }
+        }
+      }
+    },
+    "MARKED_PAID_WITH_DATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ marked as paid on %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘%@’ gemarkeerd als betaald op %@."
+          }
+        }
+      }
+    },
     "Markeer Netflix als betaald" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mark Netflix as paid"
+          }
+        }
+      }
+    },
+    "Markeer Netflix als betaald op 1/11/2025" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark Netflix as paid on 1/11/2025"
+          }
+        }
+      }
+    },
+    "Markeer Netflix als betaald vandaag of morgen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark Netflix as paid today or tomorrow"
           }
         }
       }
@@ -1117,6 +1374,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "With this app you can manage all your subscriptions on one place. Below you get a short explanation:"
+          }
+        }
+      }
+    },
+    "Momenteel in BETA" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At the moment this feature is in BETA"
           }
         }
       }
@@ -1323,6 +1590,40 @@
         }
       }
     },
+    "PER_MONTH" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "per month"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "per maand"
+          }
+        }
+      }
+    },
+    "PER_YEAR" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "per year"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "per jaar"
+          }
+        }
+      }
+    },
     "PERIOD_MONTH" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1509,6 +1810,40 @@
         }
       }
     },
+    "SAVINGS_PROMPT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name 1 or more: ‘how much do I save if I cancel Netflix and Disney+?’"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noem 1 of meerdere namen: ‘wat bespaar als ik Netflix en Disney+ opzeg?’"
+          }
+        }
+      }
+    },
+    "SAVINGS_RESULT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you cancel those, you save %@/month (~%@/year)."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als je die opzegt, bespaar je %@/maand (~%@/jaar)."
+          }
+        }
+      }
+    },
     "SEARCH_SUBSCRIPTION_PROMPT" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1650,11 +1985,21 @@
         }
       }
     },
+    "Tip: bij ‘betaald’ schuift de vervaldatum automatisch door naar de volgende periode (maandelijks/jaarlijks)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip: with ‘paid’ the due date automatically moves following the period (monthly/yearly)"
+          }
+        }
+      }
+    },
     "Tip: veeg naar links op een abonnement om **Betaald** te markeren, of om **Bewerk**/**Verwijder** te tonen." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tip: swipe left on a subscription to **Edit** or **Delete** one."
           }
         },
@@ -1692,6 +2037,60 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show in “Due soon”"
+          }
+        }
+      }
+    },
+    "Totaal deze maand" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total this month"
+          }
+        }
+      }
+    },
+    "Totaal per jaar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total per year"
+          }
+        }
+      }
+    },
+    "TOTAL_MONTH" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total this month: %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal deze maand: %@."
+          }
+        }
+      }
+    },
+    "TOTAL_YEAR" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total per year: %@."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal per jaar: %@."
           }
         }
       }
@@ -1756,6 +2155,26 @@
         }
       }
     },
+    "Voeg Audible €9,99 maandelijks toe [categorie Boeken]" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Audible €9,99 monthly [categorie Books]"
+          }
+        }
+      }
+    },
+    "Voeg iCloud €36 jaarlijks toe op 01-11-2025" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add iCloud €36 yearly on 01-11-2025"
+          }
+        }
+      }
+    },
     "Voeg Spotify €10 maandelijks toe op 1 november" : {
       "localizations" : {
         "en" : {
@@ -1816,22 +2235,22 @@
         }
       }
     },
-    "Wat is mijn totaal deze maand?" : {
+    "Wat vervalt binnen 14 dagen?" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What is my total this month?"
+            "value" : "Wat is due within 14 days?"
           }
         }
       }
     },
-    "Wat vervalt binnenkort?" : {
+    "Wat vervalt binnenkort? (standaard: 7 dagen)" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What is due soon?"
+            "value" : "What is due?"
           }
         }
       }
@@ -1852,16 +2271,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weekly"
-          }
-        }
-      }
-    },
-    "Welkom bij AbboBuddy AI" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome to AbboBuddy AI"
           }
         }
       }
