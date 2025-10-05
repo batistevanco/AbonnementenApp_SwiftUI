@@ -305,8 +305,19 @@ struct HomescreenView: View {
                 }
             }
             .searchable(text: $zoektekst, isPresented: $isSearchActive, placement: .navigationBarDrawer(displayMode: .always), prompt: Text(NSLocalizedString("SEARCH_SUBSCRIPTION_PROMPT", comment: "Search field placeholder")))
-            .onAppear { periode = Periode(rawValue: periodeRaw) ?? .maand; loadAbonnementen(); loadCategorieen(); autoMarkDueAsPaidIfEnabled() }
-            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in loadCategorieen() }
+            .onAppear {
+                periode = Periode(rawValue: periodeRaw) ?? .maand
+                loadAbonnementen()
+                loadCategorieen()
+                autoMarkDueAsPaidIfEnabled()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .categoriesUpdated)) { _ in
+                loadCategorieen()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .abboDataDidChange)) { _ in
+                loadAbonnementen()
+                autoMarkDueAsPaidIfEnabled()
+            }
 #if canImport(UIKit)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 autoMarkDueAsPaidIfEnabled()

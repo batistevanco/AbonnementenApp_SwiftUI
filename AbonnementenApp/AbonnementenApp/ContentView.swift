@@ -26,6 +26,8 @@ struct ContentView: View {
                     Image(systemName: "info.circle.fill")
                     Text("Overzicht")
                 }
+            AIChatView(toolbox: AbboToolboxImpl())
+                .tabItem { Label("Assistent", systemImage: "sparkles") }
         }
         .preferredColorScheme(preferredScheme)
         .onAppear {

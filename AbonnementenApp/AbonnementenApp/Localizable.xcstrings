@@ -31,6 +31,16 @@
         }
       }
     },
+    "💬 Voorbeelden" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💬 Examples"
+          }
+        }
+      }
+    },
     "💱 Valuta & 🎨 Thema" : {
       "localizations" : {
         "en" : {
@@ -100,6 +110,9 @@
           }
         }
       }
+    },
+    "🤖" : {
+
     },
     "🧭 Overzicht & totalen" : {
       "localizations" : {
@@ -171,6 +184,16 @@
         }
       }
     },
+    "AbboBuddy AI" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AbboBuddy AI"
+          }
+        }
+      }
+    },
     "Abonnement verwijderen?" : {
       "localizations" : {
         "en" : {
@@ -227,6 +250,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Assistent" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assistant"
           }
         }
       }
@@ -543,6 +576,26 @@
         }
       }
     },
+    "Gebruik deze assistent om snel info te krijgen en acties uit te voeren op je abonnementen." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use this assistant to get quick info and to run quick actions on your subscriptions."
+          }
+        }
+      }
+    },
+    "Gereed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
     "Herinnering" : {
       "localizations" : {
         "en" : {
@@ -685,6 +738,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose color"
+          }
+        }
+      }
+    },
+    "Kopieer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
           }
         }
       }
@@ -1008,6 +1071,16 @@
         }
       }
     },
+    "Markeer Netflix als betaald" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark Netflix as paid"
+          }
+        }
+      }
+    },
     "Meld een probleem" : {
       "localizations" : {
         "en" : {
@@ -1226,6 +1299,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancelable"
+          }
+        }
+      }
+    },
+    "Over AbboBuddy AI" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About AbboBuddy AI"
           }
         }
       }
@@ -1490,6 +1573,16 @@
         }
       }
     },
+    "Stel een vraag of geef een opdracht…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask a question or give a command"
+          }
+        }
+      }
+    },
     "Stel in wanneer je een melding wil krijgen vóór de vervaldatum." : {
       "localizations" : {
         "en" : {
@@ -1663,6 +1756,16 @@
         }
       }
     },
+    "Voeg Spotify €10 maandelijks toe op 1 november" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Spotify 10 euros monthly starting 1st of november"
+          }
+        }
+      }
+    },
     "Voeg toe" : {
       "localizations" : {
         "en" : {
@@ -1703,6 +1806,36 @@
         }
       }
     },
+    "Wat bespaar als ik Netflix en Disney+ opzeg?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What do I save if I cancel Netflix and Disney+"
+          }
+        }
+      }
+    },
+    "Wat is mijn totaal deze maand?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What is my total this month?"
+          }
+        }
+      }
+    },
+    "Wat vervalt binnenkort?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What is due soon?"
+          }
+        }
+      }
+    },
     "Weergave" : {
       "localizations" : {
         "en" : {
@@ -1719,6 +1852,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weekly"
+          }
+        }
+      }
+    },
+    "Welkom bij AbboBuddy AI" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to AbboBuddy AI"
           }
         }
       }
