@@ -21,26 +21,6 @@
         }
       }
     },
-    "✅ Markeer als betaald" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "✅ Mark as paid"
-          }
-        }
-      }
-    },
-    "➕ Abonnement toevoegen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "➕ Add subscription"
-          }
-        }
-      }
-    },
     "➡️ Swipen voor acties" : {
       "localizations" : {
         "en" : {
@@ -51,32 +31,12 @@
         }
       }
     },
-    "💰 Totale bedragen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "💰 Total values"
-          }
-        }
-      }
-    },
     "💱 Valuta & 🎨 Thema" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "💱 Valuta & 🎨 Theme"
-          }
-        }
-      }
-    },
-    "💸 Bespaar-scenario" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "💸 Saving-scenario"
           }
         }
       }
@@ -97,16 +57,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "📅 Month/Year view"
-          }
-        }
-      }
-    },
-    "📅 Vervaldagen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "📅 Due dates"
           }
         }
       }
@@ -312,6 +262,312 @@
         }
       }
     },
+    "AI_ADD_CMD_AUDIBLE_CAT" : {
+      "comment" : "Command: add Audible monthly with category",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Audible €9.99 monthly [category Books]"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg Audible €9,99 maandelijks toe [categorie Boeken]"
+          }
+        }
+      }
+    },
+    "AI_ADD_CMD_ICLOUD" : {
+      "comment" : "Command: add iCloud yearly with date",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add iCloud €36 yearly on 01-11-2025"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg iCloud €36 jaarlijks toe op 01-11-2025"
+          }
+        }
+      }
+    },
+    "AI_ADD_CMD_SPOTIFY" : {
+      "comment" : "Command: add Spotify monthly with date",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Spotify €10 monthly on November 1"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg Spotify €10 maandelijks toe op 1 november"
+          }
+        }
+      }
+    },
+    "AI_ADD_TITLE" : {
+      "comment" : "Section title: add subscription",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "➕ Add subscription"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "➕ Abonnement toevoegen"
+          }
+        }
+      }
+    },
+    "AI_DUE_CMD_UPCOMING_3" : {
+      "comment" : "Command: upcoming in 3 days",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upcoming in 3 days"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aankomend in 3 dagen"
+          }
+        }
+      }
+    },
+    "AI_DUE_CMD_UPCOMING_14" : {
+      "comment" : "Command: what is due within 14 days",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What’s due within 14 days?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wat vervalt binnen 14 dagen?"
+          }
+        }
+      }
+    },
+    "AI_DUE_CMD_UPCOMING_DEFAULT" : {
+      "comment" : "Command: what is due soon (default 7 days)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What’s due soon?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wat vervalt binnenkort? (standaard: 7 dagen)"
+          }
+        }
+      }
+    },
+    "AI_DUE_TITLE" : {
+      "comment" : "Section title: due dates",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Due dates"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Vervaldagen"
+          }
+        }
+      }
+    },
+    "AI_MARKPAID_CMD_SIMPLE" : {
+      "comment" : "Command: mark Netflix as paid",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark Netflix as paid"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markeer Netflix als betaald"
+          }
+        }
+      }
+    },
+    "AI_MARKPAID_CMD_WITH_DATE" : {
+      "comment" : "Command: mark Netflix as paid on date",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark Netflix as paid on 1/11/2025"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markeer Netflix als betaald op 1/11/2025"
+          }
+        }
+      }
+    },
+    "AI_MARKPAID_TIP" : {
+      "comment" : "Tip text: after marking paid, due date advances",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip: after marking paid, the due date automatically moves to the next period (monthly/yearly)."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tip: bij ‘betaald’ schuift de vervaldatum automatisch door naar de volgende periode (maandelijks/jaarlijks)."
+          }
+        }
+      }
+    },
+    "AI_MARKPAID_TITLE" : {
+      "comment" : "Section title: mark as paid",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Mark as paid"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Markeer als betaald"
+          }
+        }
+      }
+    },
+    "AI_SAVINGS_CMD_EXAMPLE" : {
+      "comment" : "Command: savings if cancel Netflix and Disney+",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How much do I save if I cancel Netflix and Disney+?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wat bespaar als ik Netflix en Disney+ opzeg?"
+          }
+        }
+      }
+    },
+    "AI_SAVINGS_FOOTNOTE" : {
+      "comment" : "Footnote: calculates per month and per year estimate",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The assistant calculates savings per month and estimates per year."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De assistent rekent besparing per maand en een schatting per jaar."
+          }
+        }
+      }
+    },
+    "AI_SAVINGS_TITLE" : {
+      "comment" : "Section title: savings scenario",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💸 Savings scenario"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💸 Bespaar-scenario"
+          }
+        }
+      }
+    },
+    "AI_TOTALS_CMD_PER_YEAR" : {
+      "comment" : "Command: total per year",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total per year"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal per jaar"
+          }
+        }
+      }
+    },
+    "AI_TOTALS_CMD_THIS_MONTH" : {
+      "comment" : "Command: total this month",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total this month"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totaal deze maand"
+          }
+        }
+      }
+    },
+    "AI_TOTALS_TITLE" : {
+      "comment" : "Section title: totals",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💰 Total amounts"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💰 Totale bedragen"
+          }
+        }
+      }
+    },
     "Alle abonnementen" : {
       "localizations" : {
         "en" : {
@@ -505,16 +761,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Donker"
-          }
-        }
-      }
-    },
-    "De assistent rekent besparing per maand en een schatting per jaar." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The assistant calculates how much savings a month and per year you can do."
           }
         }
       }
@@ -1961,16 +2207,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tip"
-          }
-        }
-      }
-    },
-    "Tip: bij ‘betaald’ schuift de vervaldatum automatisch door naar de volgende periode (maandelijks/jaarlijks)." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tip: with ‘paid’ the due date automatically moves following the period (monthly/yearly)"
           }
         }
       }

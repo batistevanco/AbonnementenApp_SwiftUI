@@ -503,6 +503,7 @@ fileprivate struct CopyRow: View {
 
 private struct InfoSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -514,11 +515,11 @@ private struct InfoSheet: View {
 
                     // MARK: – Totale bedragen
                     Group {
-                        Text("💰 Totale bedragen")
+                        Text(NSLocalizedString("AI_TOTALS_TITLE", comment: "Section title: totals"))
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            CopyRow(icon: "sum", text: "Totaal deze maand")
-                            CopyRow(icon: "sum", text: "Totaal per jaar")
+                            CopyRow(icon: "sum", text: NSLocalizedString("AI_TOTALS_CMD_THIS_MONTH", comment: "Command: total this month"))
+                            CopyRow(icon: "sum", text: NSLocalizedString("AI_TOTALS_CMD_PER_YEAR", comment: "Command: total per year"))
                         }
                     }
 
@@ -526,12 +527,12 @@ private struct InfoSheet: View {
 
                     // MARK: – Vervaldagen
                     Group {
-                        Text("📅 Vervaldagen")
+                        Text(NSLocalizedString("AI_DUE_TITLE", comment: "Section title: due dates"))
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            CopyRow(icon: "calendar", text: "Wat vervalt binnenkort? (standaard: 7 dagen)")
-                            CopyRow(icon: "calendar", text: "Wat vervalt binnen 14 dagen?")
-                            CopyRow(icon: "calendar", text: "Aankomend in 3 dagen")
+                            CopyRow(icon: "calendar", text: NSLocalizedString("AI_DUE_CMD_UPCOMING_DEFAULT", comment: "Command: what is due soon (default 7 days)"))
+                            CopyRow(icon: "calendar", text: NSLocalizedString("AI_DUE_CMD_UPCOMING_14", comment: "Command: what is due within 14 days"))
+                            CopyRow(icon: "calendar", text: NSLocalizedString("AI_DUE_CMD_UPCOMING_3", comment: "Command: upcoming in 3 days"))
                         }
                     }
 
@@ -539,14 +540,13 @@ private struct InfoSheet: View {
 
                     // MARK: – Markeer als betaald
                     Group {
-                        Text("✅ Markeer als betaald")
+                        Text(NSLocalizedString("AI_MARKPAID_TITLE", comment: "Section title: mark as paid"))
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            CopyRow(icon: "checkmark.circle", text: "Markeer Netflix als betaald")
-                            CopyRow(icon: "checkmark.circle", text: "Markeer Netflix als betaald op 1/11/2025")
-                            CopyRow(icon: "checkmark.circle", text: "Markeer Netflix als betaald vandaag of morgen")
+                            CopyRow(icon: "checkmark.circle", text: NSLocalizedString("AI_MARKPAID_CMD_SIMPLE", comment: "Command: mark Netflix as paid"))
+                            CopyRow(icon: "checkmark.circle", text: NSLocalizedString("AI_MARKPAID_CMD_WITH_DATE", comment: "Command: mark Netflix as paid on date"))
                         }
-                        Text("Tip: bij ‘betaald’ schuift de vervaldatum automatisch door naar de volgende periode (maandelijks/jaarlijks).")
+                        Text(NSLocalizedString("AI_MARKPAID_TIP", comment: "Tip text: after marking paid, due date advances"))
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
@@ -555,28 +555,42 @@ private struct InfoSheet: View {
 
                     // MARK: – Abonnement toevoegen
                     Group {
-                        Text("➕ Abonnement toevoegen")
+                        Text(NSLocalizedString("AI_ADD_TITLE", comment: "Section title: add subscription"))
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            CopyRow(icon: "plus.circle", text: "Voeg Spotify €10 maandelijks toe op 1 november")
-                            CopyRow(icon: "plus.circle", text: "Voeg iCloud €36 jaarlijks toe op 01-11-2025")
-                            CopyRow(icon: "plus.circle", text: "Voeg Audible €9,99 maandelijks toe [categorie Boeken]")
+                            CopyRow(icon: "plus.circle", text: NSLocalizedString("AI_ADD_CMD_SPOTIFY", comment: "Command: add Spotify monthly with date"))
+                            CopyRow(icon: "plus.circle", text: NSLocalizedString("AI_ADD_CMD_ICLOUD", comment: "Command: add iCloud yearly with date"))
+                            CopyRow(icon: "plus.circle", text: NSLocalizedString("AI_ADD_CMD_AUDIBLE_CAT", comment: "Command: add Audible monthly with category"))
                         }
-                        
                     }
 
                     Divider()
 
                     // MARK: – Bespaar-scenario
                     Group {
-                        Text("💸 Bespaar-scenario")
+                        Text(NSLocalizedString("AI_SAVINGS_TITLE", comment: "Section title: savings scenario"))
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            CopyRow(icon: "chart.line.uptrend.xyaxis", text: "Wat bespaar als ik Netflix en Disney+ opzeg?")
+                            CopyRow(icon: "chart.line.uptrend.xyaxis", text: NSLocalizedString("AI_SAVINGS_CMD_EXAMPLE", comment: "Command: savings if cancel Netflix and Disney+"))
                         }
-                        Text("De assistent rekent besparing per maand en een schatting per jaar.")
+                        Text(NSLocalizedString("AI_SAVINGS_FOOTNOTE", comment: "Footnote: calculates per month and per year estimate"))
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                    }
+                    Group {
+                        Text("Privacy Policy")
+                            .font(.headline)
+
+                        Button {
+                            if let url = URL(string: "https://www.vancoillieithulp.be/privacyPolicyAbboBuddy.html") {
+                                openURL(url)
+                            }
+                        } label: {
+                            Label("Bekijk privacy policy", systemImage: "lock.doc")
+                                .font(.body)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.accentColor)
                     }
 
                 }
