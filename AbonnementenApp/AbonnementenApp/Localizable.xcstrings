@@ -285,13 +285,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add iCloud €36 yearly on 01-11-2025"
+            "value" : "Add iCloud €36 yearly on 01-12-2025"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voeg iCloud €36 jaarlijks toe op 01-11-2025"
+            "value" : "Voeg iCloud €36 jaarlijks toe op 01-12-2025"
           }
         }
       }
@@ -302,13 +302,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add Spotify €10 monthly on November 1"
+            "value" : "Add Spotify €10 monthly on December 1"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voeg Spotify €10 maandelijks toe op 1 november"
+            "value" : "Voeg Spotify €10 maandelijks toe op 1 december"
           }
         }
       }
@@ -421,13 +421,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mark Netflix as paid on 1/11/2025"
+            "value" : "Mark Netflix as paid on 1/12/2025"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Markeer Netflix als betaald op 1/11/2025"
+            "value" : "Markeer Netflix als betaald op 1/12/2025"
           }
         }
       }
