@@ -1027,13 +1027,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hi!\n\nAsk a question (e.g. ‘total this month’, ‘what’s due soon?’) or give a command (‘mark Netflix as paid’, ‘add Spotify €10 monthly on Nov 1’)."
+            "value" : "Hoi!\n\nAsk a question:\n• ‘Total this month’\n• ‘What is due soon?’\n\nOr give a command:\n• ‘Mark Netflix as paid’\n• ‘Add Spotify €10 monthly on Nov 1’"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hoi!\\n\\nStel een vraag (bv. ‘totaal deze maand’, ‘wat vervalt binnenkort?’) of geef een opdracht (‘markeer Netflix als betaald’, ‘voeg Spotify €10 maandelijks toe op 1 november’)."
+            "value" : "Hoi!\n\nStel een vraag:\n• ‘totaal deze maand’\n• ‘wat vervalt binnenkort?’\n\nOf geef een opdracht:\n• ‘markeer Netflix als betaald’\n• ‘voeg Spotify €10 maandelijks toe op 1 november’"
           }
         }
       }
