@@ -155,7 +155,11 @@ final class AIChatViewModel: ObservableObject {
 
         // 4) Toevoegen / add
         if (lower.contains("voeg") && (lower.contains("toe") || lower.contains("toevoegen"))) || lower.contains("add ") {
-            let naam = extractNameForAdd(from: text) ?? (lang == .en ? "New subscription" : "Nieuw abonnement")
+            let fallback = (lang == .en ? "New subscription" : "Nieuw abonnement")
+            var naam = extractNameForAdd(from: text) ?? fallback
+            if naam.caseInsensitiveCompare("voeg") == .orderedSame || naam.caseInsensitiveCompare("add") == .orderedSame {
+                naam = fallback
+            }
             let prijs = extractPrice(from: lower) ?? 0.0
             let freq = (lower.contains("jaar") || lower.contains("jaarlijks") || lower.contains("year")) ? "yearly" : "monthly"
             let datum = extractDate(from: lower) ?? Date()
@@ -310,21 +314,47 @@ final class AIChatViewModel: ObservableObject {
     }
 
     private func extractNameForAdd(from text: String) -> String? {
-        let lower = text.lowercased()
-        guard let sRange = lower.range(of: "voeg") else { return nil }
-        let tailOriginal = text[sRange.upperBound...]
-        let tailLower = lower[sRange.upperBound...]
+        var t = text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
-        if let euroIdx = tailLower.firstIndex(of: Character("€")) {
-            let name = tailOriginal[..<euroIdx]
-            return name.replacingOccurrences(of: "toe", with: "", options: .caseInsensitive)
-                       .trimmingCharacters(in: .whitespacesAndNewlines)
+        // 1) Als de naam tussen quotes staat, die prefereren (", ', ‘ ’)
+        func between(_ start: Character, _ end: Character, in s: String) -> String? {
+            guard let sIdx = s.firstIndex(of: start) else { return nil }
+            let afterStart = s.index(after: sIdx)
+            guard let eIdx = s[afterStart...].firstIndex(of: end) else { return nil }
+            let sub = String(s[afterStart..<eIdx]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            return sub.isEmpty ? nil : sub
         }
-        if let toe = tailLower.range(of: "toe") {
-            let name = tailOriginal[..<toe.lowerBound]
-            return String(name).trimmingCharacters(in: .whitespacesAndNewlines)
+        if let q = between("\"", "\"", in: t)
+            ?? between("'", "'", in: t)
+            ?? between("‘", "’", in: t) {
+            return q
         }
-        return String(tailOriginal).trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // 2) Leidend werkwoord verwijderen (voeg/add)
+        if let r = t.range(of: "(?i)^(voeg|add)\\s+", options: .regularExpression) {
+            t = String(t[r.upperBound...])
+        }
+
+        // 3) Tokens verzamelen tot we een stop-token raken
+        let stopWords: Set<String> = [
+            "€", "eur", "euro", "per",
+            "maandelijks", "monthly", "jaarlijks", "yearly",
+            "toe", "on", "op", "category", "categorie",
+            "monthly,", "yearly,", "maandelijks,", "jaarlijks,"
+        ]
+
+        var parts: [String] = []
+        for raw in t.split(separator: " ") {
+            let w = String(raw)
+            let lw = w.lowercased()
+            if lw.first?.isNumber == true { break }
+            if stopWords.contains(lw) { break }
+            if lw.hasPrefix("€") { break }
+            parts.append(w)
+        }
+
+        let name = parts.joined(separator: " ").trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        return name.isEmpty ? nil : name
     }
 
 // MARK: - View
@@ -410,8 +440,9 @@ struct AIChatView: View {
             }
         }
     }
+}
 // MARK: - RoundIconButton
-private struct RoundIconButton: View {
+fileprivate struct RoundIconButton: View {
     let systemName: String
     let action: () -> Void
     var body: some View {
@@ -427,6 +458,47 @@ private struct RoundIconButton: View {
         .contentShape(Circle())
     }
 }
+
+// MARK: - CopyRow (copyable command row)
+fileprivate struct CopyRow: View {
+    let icon: String
+    let text: String
+    @State private var copied = false
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: icon)
+                .foregroundStyle(.secondary)
+            Text(text)
+                .textSelection(.enabled) // iOS 15+: long-press to select/copy
+        }
+        .contextMenu {
+            Button(action: { copy(text) }) {
+                Label("Kopieer", systemImage: "doc.on.doc")
+            }
+        }
+        .overlay(alignment: .trailing) {
+            if copied {
+                Text("Gekopieerd!")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .transition(.opacity)
+            }
+        }
+    }
+
+    private func copy(_ s: String) {
+#if canImport(UIKit)
+        UIPasteboard.general.string = s
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+#endif
+        withAnimation(.easeInOut(duration: 0.6)) {
+            copied = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            withAnimation(.easeInOut(duration: 0.3)) { copied = false }
+        }
+    }
 }
 
 private struct InfoSheet: View {
@@ -437,7 +509,7 @@ private struct InfoSheet: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Alles wat je met AbboBuddy AI kunt doen")
                         .font(.title2).bold()
-                    Text("Momenteel in BETA")
+                    Text("U kan de commando's kopieren en plakken in de chat.")
                         .font(.title3)
 
                     // MARK: – Totale bedragen
@@ -445,8 +517,8 @@ private struct InfoSheet: View {
                         Text("💰 Totale bedragen")
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Totaal deze maand", systemImage: "sum")
-                            Label("Totaal per jaar", systemImage: "sum")
+                            CopyRow(icon: "sum", text: "Totaal deze maand")
+                            CopyRow(icon: "sum", text: "Totaal per jaar")
                         }
                     }
 
@@ -457,9 +529,9 @@ private struct InfoSheet: View {
                         Text("📅 Vervaldagen")
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Wat vervalt binnenkort? (standaard: 7 dagen)", systemImage: "calendar")
-                            Label("Wat vervalt binnen 14 dagen?", systemImage: "calendar")
-                            Label("Aankomend in 3 dagen", systemImage: "calendar")
+                            CopyRow(icon: "calendar", text: "Wat vervalt binnenkort? (standaard: 7 dagen)")
+                            CopyRow(icon: "calendar", text: "Wat vervalt binnen 14 dagen?")
+                            CopyRow(icon: "calendar", text: "Aankomend in 3 dagen")
                         }
                     }
 
@@ -470,9 +542,9 @@ private struct InfoSheet: View {
                         Text("✅ Markeer als betaald")
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Markeer Netflix als betaald", systemImage: "checkmark.circle")
-                            Label("Markeer Netflix als betaald op 1/11/2025", systemImage: "checkmark.circle")
-                            Label("Markeer Netflix als betaald vandaag of morgen", systemImage: "checkmark.circle")
+                            CopyRow(icon: "checkmark.circle", text: "Markeer Netflix als betaald")
+                            CopyRow(icon: "checkmark.circle", text: "Markeer Netflix als betaald op 1/11/2025")
+                            CopyRow(icon: "checkmark.circle", text: "Markeer Netflix als betaald vandaag of morgen")
                         }
                         Text("Tip: bij ‘betaald’ schuift de vervaldatum automatisch door naar de volgende periode (maandelijks/jaarlijks).")
                             .font(.footnote)
@@ -486,9 +558,9 @@ private struct InfoSheet: View {
                         Text("➕ Abonnement toevoegen")
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Voeg Spotify €10 maandelijks toe op 1 november", systemImage: "plus.circle")
-                            Label("Voeg iCloud €36 jaarlijks toe op 01-11-2025", systemImage: "plus.circle")
-                            Label("Voeg Audible €9,99 maandelijks toe [categorie Boeken]", systemImage: "plus.circle")
+                            CopyRow(icon: "plus.circle", text: "Voeg Spotify €10 maandelijks toe op 1 november")
+                            CopyRow(icon: "plus.circle", text: "Voeg iCloud €36 jaarlijks toe op 01-11-2025")
+                            CopyRow(icon: "plus.circle", text: "Voeg Audible €9,99 maandelijks toe [categorie Boeken]")
                         }
                         
                     }
@@ -500,7 +572,7 @@ private struct InfoSheet: View {
                         Text("💸 Bespaar-scenario")
                             .font(.headline)
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Wat bespaar als ik Netflix en Disney+ opzeg?", systemImage: "chart.line.uptrend.xyaxis")
+                            CopyRow(icon: "chart.line.uptrend.xyaxis", text: "Wat bespaar als ik Netflix en Disney+ opzeg?")
                         }
                         Text("De assistent rekent besparing per maand en een schatting per jaar.")
                             .font(.footnote)
@@ -615,12 +687,6 @@ private struct ChatBubble: View {
     }
 }
 
-private func copyToPasteboard(_ s: String) {
-#if canImport(UIKit)
-    UIPasteboard.general.string = s
-    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-#endif
-}
 
 private struct InputBar: View {
     @Binding var text: String
@@ -666,6 +732,12 @@ private struct InputBar: View {
     }
 }
 
+fileprivate func copyToPasteboard(_ s: String) {
+#if canImport(UIKit)
+    UIPasteboard.general.string = s
+    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+#endif
+}
 // MARK: - Utility (kleine helper voor regex in extractDate)
 private extension Int {
     func numberOfMatches(of pattern: String, in text: String) -> Int {

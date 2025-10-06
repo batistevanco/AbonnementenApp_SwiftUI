@@ -221,16 +221,6 @@
         }
       }
     },
-    "Aankomend in 3 dagen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Due in 3 days"
-          }
-        }
-      }
-    },
     "AbboBuddy" : {
       "localizations" : {
         "en" : {
@@ -398,6 +388,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Automatically mark payments as paid on due dates "
+          }
+        }
+      }
+    },
+    "Bekijk privacy policy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch privacy policy"
           }
         }
       }
@@ -751,6 +751,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Go to **Home** → tap **Add**. Enter the name, price, frequency, due date, and category. You can also add a note and indicate whether it is cancellable.\n"
+          }
+        }
+      }
+    },
+    "Gekopieerd!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied!"
           }
         }
       }
@@ -1308,36 +1318,6 @@
         }
       }
     },
-    "Markeer Netflix als betaald" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mark Netflix as paid"
-          }
-        }
-      }
-    },
-    "Markeer Netflix als betaald op 1/11/2025" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mark Netflix as paid on 1/11/2025"
-          }
-        }
-      }
-    },
-    "Markeer Netflix als betaald vandaag of morgen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mark Netflix as paid today or tomorrow"
-          }
-        }
-      }
-    },
     "Meld een probleem" : {
       "localizations" : {
         "en" : {
@@ -1374,16 +1354,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "With this app you can manage all your subscriptions on one place. Below you get a short explanation:"
-          }
-        }
-      }
-    },
-    "Momenteel in BETA" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "At the moment this feature is in BETA"
           }
         }
       }
@@ -1704,6 +1674,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Price (e.g. 12,99)"
+          }
+        }
+      }
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
           }
         }
       }
@@ -2041,26 +2021,6 @@
         }
       }
     },
-    "Totaal deze maand" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Total this month"
-          }
-        }
-      }
-    },
-    "Totaal per jaar" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Total per year"
-          }
-        }
-      }
-    },
     "TOTAL_MONTH" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2091,6 +2051,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Totaal per jaar: %@."
+          }
+        }
+      }
+    },
+    "U kan de commando's kopieren en plakken in de chat." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can copy the commands and paste them into the chat."
           }
         }
       }
@@ -2155,36 +2125,6 @@
         }
       }
     },
-    "Voeg Audible €9,99 maandelijks toe [categorie Boeken]" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Audible €9,99 monthly [categorie Books]"
-          }
-        }
-      }
-    },
-    "Voeg iCloud €36 jaarlijks toe op 01-11-2025" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add iCloud €36 yearly on 01-11-2025"
-          }
-        }
-      }
-    },
-    "Voeg Spotify €10 maandelijks toe op 1 november" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Spotify 10 euros monthly starting 1st of november"
-          }
-        }
-      }
-    },
     "Voeg toe" : {
       "localizations" : {
         "en" : {
@@ -2221,36 +2161,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "When this is enabled, subscriptions are automatically marked as **Paid** as soon as the due date arrives (or the next time you open the app if you missed the payment date)."
-          }
-        }
-      }
-    },
-    "Wat bespaar als ik Netflix en Disney+ opzeg?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What do I save if I cancel Netflix and Disney+"
-          }
-        }
-      }
-    },
-    "Wat vervalt binnen 14 dagen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wat is due within 14 days?"
-          }
-        }
-      }
-    },
-    "Wat vervalt binnenkort? (standaard: 7 dagen)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What is due?"
           }
         }
       }

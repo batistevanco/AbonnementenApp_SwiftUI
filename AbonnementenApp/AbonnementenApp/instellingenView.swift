@@ -62,6 +62,7 @@ struct instellingenView: View {
 
     @State private var showingMailSheet: Bool = false
     @State private var mailFallbackFailed: Bool = false
+    @Environment(\.openURL) private var openURL
 
     private let leadTimeOptions: [(label: String, days: Int)] = [
         (NSLocalizedString("LEADTIME_SAME_DAY", comment: "Same day"), 0),
@@ -359,6 +360,23 @@ struct instellingenView: View {
                             Text("💾 Opslag")
                                 .font(.headline)
                             Text("Alles wordt lokaal bewaard via **AppStorage** (UserDefaults). Je data blijft bewaard tussen app-sessies.")
+                        }
+                        // ...
+
+                        Group {
+                            Text("Privacy Policy")
+                                .font(.headline)
+
+                            Button {
+                                if let url = URL(string: "https://www.vancoillieithulp.be/privacyPolicyAbboBuddy.html") {
+                                    openURL(url)
+                                }
+                            } label: {
+                                Label("Bekijk privacy policy", systemImage: "lock.doc")
+                                    .font(.body)
+                            }
+                            .buttonStyle(.bordered)      // of .borderedProminent als je ‘m opvallend wil
+                            .tint(.accentColor)          // volgt je accentkleur
                         }
                     }
                     .padding()
