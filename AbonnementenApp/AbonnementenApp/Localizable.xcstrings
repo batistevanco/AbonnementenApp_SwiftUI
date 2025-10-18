@@ -618,6 +618,16 @@
         }
       }
     },
+    "App naam" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App name"
+          }
+        }
+      }
+    },
     "Assistent" : {
       "localizations" : {
         "en" : {
@@ -1011,6 +1021,16 @@
         }
       }
     },
+    "Gemaakt door Vancoillie Studio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Build by Vancoillie Studio"
+          }
+        }
+      }
+    },
     "Gereed" : {
       "localizations" : {
         "en" : {
@@ -1104,22 +1124,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
-          }
-        }
-      }
-    },
-    "Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen %lld week%@ valt." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Items appear in *Due Soon* when the due date falls within %1$lld week(s).\n"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen %1$lld week%2$@ valt."
           }
         }
       }
@@ -1589,7 +1593,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notifications will be send around %@"
+            "value" : "Notifications will be sent around %@"
           }
         }
       }
@@ -2311,6 +2315,38 @@
         }
       }
     },
+    "UPCOMING_WINDOW_1WEEK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items appear in *Due soon* when the due date falls within 1 week."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen 1 week valt."
+          }
+        }
+      }
+    },
+    "UPCOMING_WINDOW_NWEEKS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items appear in *Due soon* when the due date falls within %d weeks."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen %d weken vallen."
+          }
+        }
+      }
+    },
     "Valuta" : {
       "localizations" : {
         "en" : {
@@ -2347,6 +2383,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Don’t forget to pay"
+          }
+        }
+      }
+    },
+    "Versie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
           }
         }
       }

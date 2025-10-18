@@ -94,6 +94,17 @@ struct instellingenView: View {
         let currency = currencyCode
         return "Write your issue here...\n\n— App info —\nThema: \(appTheme)\nValuta: \(currency)\n— Device —\nModel: \(model)\nSysteem: \(system)\n"
     }
+    
+    /// Localized sentence for the upcoming window description.
+    /// Expects a .stringsdict entry for key `UPCOMING_WINDOW_SENTENCE` that pluralizes on the week count
+    /// and can adjust the verb as needed per language.
+    private func upcomingWindowSentence(_ n: Int) -> String {
+        if n == 1 {
+            return NSLocalizedString("UPCOMING_WINDOW_1WEEK", comment: "")
+        } else {
+            return String(format: NSLocalizedString("UPCOMING_WINDOW_NWEEKS", comment: ""), n)
+        }
+    }
 
     var body: some View {
         Form {
@@ -133,8 +144,10 @@ struct instellingenView: View {
                     Text("4 weken").tag(4)
                 }
                 .pickerStyle(.segmented)
+                
+                
 
-                Text("Items verschijnen in *Binnenkort te betalen* wanneer de vervaldatum binnen \(upcomingWeeksWindow) week\(upcomingWeeksWindow == 1 ? "" : "en") valt.")
+                Text(upcomingWindowSentence(upcomingWeeksWindow))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
@@ -229,6 +242,30 @@ struct instellingenView: View {
                 Text("Categorieën")
             } footer: {
                 Text("Standaardcategorieën zijn: \(CategoriesDefaults.fallback.joined(separator: ", ")). Je kunt deze lijst vrij aanpassen.")
+            }
+            
+            Section {
+                HStack {
+                    Text("App naam")
+                    Spacer()
+                    Text(appDisplayName())
+                        .multilineTextAlignment(.trailing)
+                }
+                .accessibilityIdentifier("about_app_name")
+
+                HStack {
+                    Text("Versie")
+                    Spacer()
+                    Text(appVersionString())
+                        .monospaced()
+                        .multilineTextAlignment(.trailing)
+                }
+                .accessibilityIdentifier("about_app_version")
+                HStack {
+                    Text("Gemaakt door Vancoillie Studio")
+                }
+            } header: {
+                Text("Versie")
             }
 
             Section {
@@ -520,6 +557,14 @@ struct instellingenView: View {
             return name
         }
         return "Abonnementen"
+    }
+
+    private func appVersionString() -> String {
+        let ver = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        if let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String, build.isEmpty == false {
+            return "\(ver) (\(build))"
+        }
+        return ver
     }
 
 
