@@ -1199,6 +1199,7 @@
       }
     },
     "Kopieer en mail ons op info@vancoillieithulp.be." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1207,6 +1208,9 @@
           }
         }
       }
+    },
+    "Kopieer en mail ons op support@vancoilliestudio.be." : {
+
     },
     "KPI_SUBSCRIPTIONS" : {
       "extractionState" : "manual",
@@ -1498,6 +1502,7 @@
       }
     },
     "Lukt e-mail niet? Mail ons dan rechtstreeks op info@vancoillieithulp.be." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1506,6 +1511,9 @@
           }
         }
       }
+    },
+    "Lukt e-mail niet? Mail ons dan rechtstreeks op support@vancoilliestudio.be." : {
+
     },
     "Maandelijks" : {
       "localizations" : {

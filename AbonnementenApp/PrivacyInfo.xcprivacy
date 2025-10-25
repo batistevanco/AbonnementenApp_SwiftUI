@@ -6,10 +6,10 @@
 	<array>
 		<dict>
 			<key>NSPrivacyAccessedAPIType</key>
-			<string>NSPrivacyAccessedAPICategoryPasteboard</string>
+			<string>NSPrivacyAccessedAPICategoryActiveKeyboards</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
-				<string>NSPasteboardWriteObjects</string>
+				<string>Accesses the pasteboard to let users copy and paste content</string>
 			</array>
 		</dict>
 	</array>
