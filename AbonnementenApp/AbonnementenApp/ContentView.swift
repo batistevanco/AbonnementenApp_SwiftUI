@@ -7,11 +7,17 @@
 
 import SwiftUI
 
+private let sharedDefaults = UserDefaults(suiteName: "group.be.vancoilliestudio.abbobuddy.shared")!
+
+
 struct ContentView: View {
     @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @AppStorage("appTheme") private var appTheme: String = "system"
-    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
     @AppStorage("categories") private var categoriesRaw: Data = Data()
+    
+
+    @AppStorage("abonnementenData", store: sharedDefaults)
+    private var abonnementenData: Data = Data()
 
     var body: some View {
         TabView {

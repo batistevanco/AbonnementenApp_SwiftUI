@@ -5,6 +5,10 @@
 //  Created by Batiste Vancoillie on 30/09/2025.
 //
 
+
+private let sharedDefaults = UserDefaults(
+    suiteName: "group.be.vancoilliestudio.abbobuddy.shared"
+)!
 import SwiftUI
 
 struct overzichtView: View {
@@ -14,7 +18,7 @@ struct overzichtView: View {
     @AppStorage("appTheme") private var appTheme: String = "system"
 
     // MARK: - State
-    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
+    @AppStorage("abonnementenData", store: sharedDefaults) private var abonnementenData: Data = Data()
     @State private var abonnementen: [Abonnement] = []
     @AppStorage(CategoriesDefaults.key) private var categoriesRaw: Data = Data()
     @State private var categorieen: [String] = []

@@ -5,8 +5,15 @@
 //  Created by Batiste Vancoillie on 30/09/2025.
 //
 
+
 import SwiftUI
 import UserNotifications
+
+private let sharedDefaults = UserDefaults(
+    suiteName: "group.be.vancoilliestudio.abbobuddy.shared"
+)!
+
+
 
 // MARK: - Notification helpers (local)
 private func appDisplayName() -> String {
@@ -122,7 +129,7 @@ struct HomescreenView: View {
     @State private var periode: Periode = .maand
     @State private var zoektekst: String = ""
     @State private var isSearchActive: Bool = false
-    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
+    @AppStorage("abonnementenData", store: sharedDefaults) private var abonnementenData: Data = Data()
     @State private var abonnementen: [Abonnement] = []
     @AppStorage("currencyCode") private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
     @AppStorage("appTheme") private var appTheme: String = "system"

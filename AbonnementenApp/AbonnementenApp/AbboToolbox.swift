@@ -1,5 +1,9 @@
 import Foundation
 
+private let sharedDefaults = UserDefaults(
+    suiteName: "group.be.vancoilliestudio.abbobuddy.shared"
+)!
+
 // MARK: - Een heel dunne 'store' wrapper
 // VERVANG deze door jouw echte opslaglaag.
 // - Vul de twee TODO's in om te lezen/schrijven naar jouw data (SharedDefaults / CoreData).
@@ -30,7 +34,7 @@ final class SubscriptionStore {
     private static func persist(_ items: [AbboInfo]) {
         let abboLijst = items.map { toYourModel($0) }
         if let data = try? JSONEncoder().encode(abboLijst) {
-            UserDefaults.standard.set(data, forKey: AbonnementenDefaults.key)
+            sharedDefaults.set(data, forKey: AbonnementenDefaults.key)
         }
     }
 }

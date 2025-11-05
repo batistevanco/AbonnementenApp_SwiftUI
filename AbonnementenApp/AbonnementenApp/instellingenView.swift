@@ -5,10 +5,15 @@
 //  Created by Batiste Vancoillie on 30/09/2025.
 //
 
+
 import SwiftUI
 import UserNotifications
 import UIKit
 import MessageUI
+
+private let sharedDefaults = UserDefaults(
+    suiteName: "group.be.vancoilliestudio.abbobuddy.shared"
+)!
 
 
 // MARK: - Keys & Defaults
@@ -40,7 +45,7 @@ struct instellingenView: View {
     @State private var notifStatus: String = ""
 
     // Valuta (ISO-4217)
-    @AppStorage(SettingsKeys.currencyCode) private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
+    @AppStorage(SettingsKeys.currencyCode, store: sharedDefaults) private var currencyCode: String = Locale.current.currency?.identifier ?? "EUR"
 
     // Thema: system / light / dark
     @AppStorage(SettingsKeys.appTheme) private var appTheme: String = "system"
@@ -396,7 +401,7 @@ struct instellingenView: View {
                         Group {
                             Text("💾 Opslag")
                                 .font(.headline)
-                            Text("Alles wordt lokaal bewaard via **AppStorage** (UserDefaults). Je data blijft bewaard tussen app-sessies.")
+                            Text("Alles wordt lokaal bewaard via **AppStorage** (SharedDefaults). Je data blijft bewaard tussen app-sessies.")
                         }
                         // ...
 

@@ -2,6 +2,10 @@ import SwiftUI
 import Foundation
 import Combine
 
+private let sharedDefaults = UserDefaults(
+    suiteName: "group.be.vancoilliestudio.abbobuddy.shared"
+)
+
 // MARK: - Protocol: Koppeling met jouw data-laag
 // Implementeer deze in je bestaande data/service (bv. via SharedDefaults/CoreData).
 protocol AbboToolbox {
@@ -368,7 +372,12 @@ struct AIChatView: View {
     // Injecteer jouw implementatie van AbboToolbox hier
     init(toolbox: AbboToolbox) {
         _vm = StateObject(wrappedValue: AIChatViewModel(tools: toolbox, currencyProvider: {
-            UserDefaults.standard.string(forKey: "currencyCode") ?? Locale.current.currency?.identifier ?? "EUR"
+            // eerst proberen uit gedeelde app group te lezen
+            if let code = sharedDefaults?.string(forKey: "currencyCode") {
+                return code
+            }
+            // fallback naar standaard
+            return UserDefaults.standard.string(forKey: "currencyCode") ?? Locale.current.currency?.identifier ?? "EUR"
         }))
     }
 

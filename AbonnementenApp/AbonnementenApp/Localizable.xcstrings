@@ -588,7 +588,11 @@
         }
       }
     },
+    "Alles wordt lokaal bewaard via **AppStorage** (SharedDefaults). Je data blijft bewaard tussen app-sessies." : {
+
+    },
     "Alles wordt lokaal bewaard via **AppStorage** (UserDefaults). Je data blijft bewaard tussen app-sessies." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

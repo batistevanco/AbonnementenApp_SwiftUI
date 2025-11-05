@@ -254,12 +254,20 @@ struct CategoriesDefaults {
 
 struct AbonnementenDefaults {
     static let key = "abonnementenData"
-    
+    // gebruik de gedeelde container die je al in de entitlements hebt
+    private static let store = UserDefaults(suiteName: "group.be.vancoilliestudio.abbobuddy.shared")!
+
     static func load() -> [Abonnement] {
-        if let data = UserDefaults.standard.data(forKey: key),
+        if let data = store.data(forKey: key),
            let arr = try? JSONDecoder().decode([Abonnement].self, from: data) {
             return arr
         }
         return []
+    }
+
+    static func save(_ items: [Abonnement]) {
+        if let data = try? JSONEncoder().encode(items) {
+            store.set(data, forKey: key)
+        }
     }
 }
