@@ -1,32 +1,49 @@
+//
+//  MainWatchView.swift
+//  AbonnementenApp Watch App
+//
+//  Created by Batiste Vancoillie on 06/11/2025.
+//
+
 import SwiftUI
 
-// gedeelde defaults uit je app group
-private let sharedStore = UserDefaults(
-    suiteName: "group.be.vancoilliestudio.abbobuddy.shared"
-)
+// Je gedeelde UserDefaults-container (zelfde als iOS)
+private let sharedStore = UserDefaults(suiteName: "group.be.vancoilliestudio.abbobuddy.shared")
 
-struct MainWatchView: View {
+struct ContentView: View {
     @State private var abonnementen: [Abonnement] = []
+    @State private var loadError: String?
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-
-                // titel
+                // Titel
                 Text("AbboBuddy")
                     .font(.headline)
+                    .foregroundStyle(.black)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .foregroundStyle(Color.black)
 
+                // Eventuele foutmelding
+                if let loadError {
+                    Text(loadError)
+                        .font(.caption2)
+                        .foregroundStyle(.red)
+                }
 
-                // kaart 1: totals
-                VStack(alignment: .leading, spacing: 6) {
+                // 📊 Overzicht kaart
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Overzicht")
+                        .font(.footnote)
+                        .bold()
+                        .foregroundStyle(.black)
+
                     HStack {
                         Text("Totaal maand:")
                         Spacer()
                         Text(formattedCurrency(totalPerMaand))
                             .bold()
                     }
+
                     HStack {
                         Text("Totaal jaar:")
                         Spacer()
@@ -40,19 +57,18 @@ struct MainWatchView: View {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .fill(Color.white.opacity(0.25))
                 )
-                .foregroundStyle(Color.black)
 
-
-                // kaart 2: upcoming
+                // 💳 Binnenkort te betalen kaart
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Binnenkort te betalen:")
                         .font(.footnote)
                         .bold()
-                        .foregroundStyle(Color.black)
-
+                        .foregroundStyle(.black)
 
                     ForEach(upcomingAbonnementen) { abbo in
                         HStack {
+                            Image(systemName: abbo.iconSymbol)
+                                .font(.caption)
                             Text(abbo.naam)
                                 .bold()
                                 .lineLimit(1)
@@ -67,13 +83,13 @@ struct MainWatchView: View {
                         .padding(.horizontal, 6)
                         .background(
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.white.opacity(0.03))
+                                .fill(Color.white.opacity(0.1))
                         )
                     }
 
                     if upcomingAbonnementen.isEmpty {
                         Text("Geen betalingen 🤙")
-                            .foregroundStyle(Color.gray)
+                            .foregroundStyle(.gray)
                     }
                 }
                 .padding(10)
@@ -86,7 +102,7 @@ struct MainWatchView: View {
             .padding(.horizontal, 8)
             .padding(.top, 6)
         }
-        .background(Color(red: 0.85, green: 0.95, blue: 0.85)) // lichtgroene achtergrond
+        .background(Color(red: 0.85, green: 0.95, blue: 0.85))
         .onAppear {
             loadFromSharedDefaults()
         }
@@ -95,14 +111,13 @@ struct MainWatchView: View {
     // MARK: - Helpers
 
     private var totalPerMaand: Double {
-        abonnementen.reduce(0) { $0 + $1.prijs }
+        abonnementen.map { $0.maandBedrag }.reduce(0, +)
     }
 
     private var totalPerJaar: Double {
-        totalPerMaand * 12
+        abonnementen.map { $0.jaarBedrag }.reduce(0, +)
     }
 
-    // voor nu gewoon dezelfde volgorde; hier kan je straks sorteren op vervaldatum
     private var upcomingAbonnementen: [Abonnement] {
         abonnementen
             .filter { $0.isBinnen30Dagen }
@@ -112,22 +127,27 @@ struct MainWatchView: View {
     private func formattedCurrency(_ value: Double) -> String {
         let f = NumberFormatter()
         f.numberStyle = .currency
-        f.currencyCode = "EUR" // of in watch ook uit shared defaults lezen
-        return f.string(from: NSNumber(value: value)) ?? "€\(value)"
+        f.currencyCode = "EUR"
+        return f.string(from: NSNumber(value: value)) ?? "€0,00"
     }
 
+    // MARK: - Data ophalen uit App Group
     private func loadFromSharedDefaults() {
-        guard let data = sharedStore?.data(forKey: "abonnementenData") else {
-            print("⌚️ Watch: geen data gevonden in app group")
+        guard let store = sharedStore else {
+            loadError = "Geen shared store – check App Group"
+            return
+        }
+        guard let data = store.data(forKey: "abonnementenData") else {
+            loadError = "Geen data gevonden (key 'abonnementenData')"
             return
         }
 
         let decoder = JSONDecoder()
-        // als jouw Abonnement dates gebruikt, kan je hier ook dateDecodingStrategy zetten
         if let arr = try? decoder.decode([Abonnement].self, from: data) {
             abonnementen = arr
+            loadError = nil
         } else {
-            print("⚠️ Watch: kon abonnementen niet decoden – mogelijk andere versie van Abonnement op iPhone")
+            loadError = "Kon abonnementen niet decoderen – zelfde model op iOS & watch?"
         }
     }
 }
