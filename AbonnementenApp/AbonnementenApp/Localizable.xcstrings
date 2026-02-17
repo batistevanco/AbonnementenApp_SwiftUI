@@ -192,10 +192,24 @@
       }
     },
     "Abonnement" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription"
+          }
+        }
+      }
     },
     "Abonnement niet gevonden" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription not found"
+          }
+        }
+      }
     },
     "Abonnement verwijderen?" : {
       "localizations" : {
@@ -208,7 +222,14 @@
       }
     },
     "Abonnementen Dagboek" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription log"
+          }
+        }
+      }
     },
     "Accentkleur" : {
       "localizations" : {
@@ -668,7 +689,14 @@
       }
     },
     "Beheer hier je account- en betalingsgegevens per abonnement." : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage your account- en payment details for each subscription"
+          }
+        }
+      }
     },
     "Bekijk privacy policy" : {
       "localizations" : {
@@ -701,16 +729,44 @@
       }
     },
     "Betaalmethode (bv. Visa, PayPal, Bancontact)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment methode (Visa, PayPay, …)"
+          }
+        }
+      }
     },
     "Betaling" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment"
+          }
+        }
+      }
     },
     "Betaling leeg" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment empty"
+          }
+        }
+      }
     },
     "Betaling ok" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment ok"
+          }
+        }
+      }
     },
     "Bewaar" : {
       "localizations" : {
@@ -783,7 +839,14 @@
       }
     },
     "Dagboek" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log"
+          }
+        }
+      }
     },
     "DARKMODE" : {
       "comment" : "Theme option: dark",
@@ -884,7 +947,14 @@
       }
     },
     "E-mail" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-mail"
+          }
+        }
+      }
     },
     "E-mail kon niet geopend worden" : {
       "localizations" : {
@@ -944,7 +1014,14 @@
       }
     },
     "Extra" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extra"
+          }
+        }
+      }
     },
     "Extra info (bv. plan, kortingscode)…" : {
       "localizations" : {
@@ -957,10 +1034,24 @@
       }
     },
     "Extra notitie" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extra note"
+          }
+        }
+      }
     },
     "Facturatie notitie" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment note"
+          }
+        }
+      }
     },
     "FREQ_MONTHLY" : {
       "extractionState" : "manual",
@@ -1051,10 +1142,24 @@
       }
     },
     "Gebruikersnaam" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username"
+          }
+        }
+      }
     },
     "Geen abonnementen" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No subscriptions"
+          }
+        }
+      }
     },
     "Gekopieerd!" : {
       "localizations" : {
@@ -1243,19 +1348,15 @@
         }
       }
     },
-    "Kopieer en mail ons op info@vancoillieithulp.be." : {
-      "extractionState" : "stale",
+    "Kopieer en mail ons op support@vancoilliestudio.be." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copy and email us on info@vancoillieithulp.be"
+            "value" : "Copy and email us on support@vancoilliestudio.be"
           }
         }
       }
-    },
-    "Kopieer en mail ons op support@vancoilliestudio.be." : {
-
     },
     "KPI_SUBSCRIPTIONS" : {
       "extractionState" : "manual",
@@ -1547,27 +1648,44 @@
       }
     },
     "Login gegevens" : {
-
-    },
-    "Login leeg" : {
-
-    },
-    "Login ok" : {
-
-    },
-    "Lukt e-mail niet? Mail ons dan rechtstreeks op info@vancoillieithulp.be." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Did e-mail not work? Mail us directly on info@vancoillieithulp.be"
+            "value" : "Login information"
+          }
+        }
+      }
+    },
+    "Login leeg" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login empty"
+          }
+        }
+      }
+    },
+    "Login ok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login ok"
           }
         }
       }
     },
     "Lukt e-mail niet? Mail ons dan rechtstreeks op support@vancoilliestudio.be." : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Did e-mail not work? Mail us directly on support@vancoilliestudio.be"
+          }
+        }
+      }
     },
     "Maandelijks" : {
       "localizations" : {
@@ -2500,7 +2618,14 @@
       }
     },
     "Wachtwoord" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password"
+          }
+        }
+      }
     },
     "Wanneer dit aan staat, worden abonnementen automatisch als **Betaald** gemarkeerd zodra de vervaldag aanbreekt (of zodra je de app opent als je de betaaldag gemist hebt)." : {
       "localizations" : {
@@ -2513,7 +2638,14 @@
       }
     },
     "Website of portaal" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Website or portal"
+          }
+        }
+      }
     },
     "Weergave" : {
       "localizations" : {
@@ -2556,7 +2688,14 @@
       }
     },
     "Zoek op naam of categorie" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search by name or category"
+          }
+        }
+      }
     },
     "Zonder vervaldag" : {
       "localizations" : {
