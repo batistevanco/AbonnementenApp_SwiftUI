@@ -26,6 +26,13 @@ struct ContentView: View {
                     Image(systemName: "info.circle.fill")
                     Text("Overzicht")
                 }
+
+            dagboekView()
+                .tabItem {
+                    Image(systemName: "book.pages.fill")
+                    Text("Dagboek")
+                }
+
             AIChatView(toolbox: AbboToolboxImpl())
                 .tabItem { Label("Assistent", systemImage: "sparkles") }
         }

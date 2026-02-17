@@ -191,6 +191,12 @@
         }
       }
     },
+    "Abonnement" : {
+
+    },
+    "Abonnement niet gevonden" : {
+
+    },
     "Abonnement verwijderen?" : {
       "localizations" : {
         "en" : {
@@ -200,6 +206,9 @@
           }
         }
       }
+    },
+    "Abonnementen Dagboek" : {
+
     },
     "Accentkleur" : {
       "localizations" : {
@@ -658,6 +667,9 @@
         }
       }
     },
+    "Beheer hier je account- en betalingsgegevens per abonnement." : {
+
+    },
     "Bekijk privacy policy" : {
       "localizations" : {
         "en" : {
@@ -687,6 +699,18 @@
           }
         }
       }
+    },
+    "Betaalmethode (bv. Visa, PayPal, Bancontact)" : {
+
+    },
+    "Betaling" : {
+
+    },
+    "Betaling leeg" : {
+
+    },
+    "Betaling ok" : {
+
     },
     "Bewaar" : {
       "localizations" : {
@@ -757,6 +781,9 @@
           }
         }
       }
+    },
+    "Dagboek" : {
+
     },
     "DARKMODE" : {
       "comment" : "Theme option: dark",
@@ -856,6 +883,9 @@
         }
       }
     },
+    "E-mail" : {
+
+    },
     "E-mail kon niet geopend worden" : {
       "localizations" : {
         "en" : {
@@ -913,6 +943,9 @@
         }
       }
     },
+    "Extra" : {
+
+    },
     "Extra info (bv. plan, kortingscode)…" : {
       "localizations" : {
         "en" : {
@@ -922,6 +955,12 @@
           }
         }
       }
+    },
+    "Extra notitie" : {
+
+    },
+    "Facturatie notitie" : {
+
     },
     "FREQ_MONTHLY" : {
       "extractionState" : "manual",
@@ -1010,6 +1049,12 @@
           }
         }
       }
+    },
+    "Gebruikersnaam" : {
+
+    },
+    "Geen abonnementen" : {
+
     },
     "Gekopieerd!" : {
       "localizations" : {
@@ -1500,6 +1545,15 @@
           }
         }
       }
+    },
+    "Login gegevens" : {
+
+    },
+    "Login leeg" : {
+
+    },
+    "Login ok" : {
+
     },
     "Lukt e-mail niet? Mail ons dan rechtstreeks op info@vancoillieithulp.be." : {
       "extractionState" : "stale",
@@ -2445,6 +2499,9 @@
         }
       }
     },
+    "Wachtwoord" : {
+
+    },
     "Wanneer dit aan staat, worden abonnementen automatisch als **Betaald** gemarkeerd zodra de vervaldag aanbreekt (of zodra je de app opent als je de betaaldag gemist hebt)." : {
       "localizations" : {
         "en" : {
@@ -2454,6 +2511,9 @@
           }
         }
       }
+    },
+    "Website of portaal" : {
+
     },
     "Weergave" : {
       "localizations" : {
@@ -2494,6 +2554,9 @@
           }
         }
       }
+    },
+    "Zoek op naam of categorie" : {
+
     },
     "Zonder vervaldag" : {
       "localizations" : {

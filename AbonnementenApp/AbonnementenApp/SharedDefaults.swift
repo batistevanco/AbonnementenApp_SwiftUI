@@ -180,6 +180,12 @@ struct Abonnement: Identifiable, Codable {
     var categorieIcon: String? = nil// SF Symbol naam, optioneel
     var opzegbaar: Bool
     var notitie: String?
+    var loginGebruikersnaam: String? = nil
+    var loginEmail: String? = nil
+    var loginWachtwoord: String? = nil
+    var betalingsMethode: String? = nil
+    var facturatieNotitie: String? = nil
+    var accountWebsite: String? = nil
 
     // MARK: - Computed amounts per period
     var maandBedrag: Double {
