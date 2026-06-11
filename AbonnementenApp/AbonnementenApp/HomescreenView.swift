@@ -103,6 +103,18 @@ private func scheduleSubscriptionReminder(name: String, dueDate: Date, amountTex
 
 struct HomescreenView: View {
     // MARK: - Types
+    enum TimelineItem: Identifiable {
+        case dateHeader(Date)
+        case subscription(Abonnement)
+
+        var id: String {
+            switch self {
+            case .dateHeader(let d): return "header-\(d.timeIntervalSince1970)"
+            case .subscription(let a): return a.id.uuidString
+            }
+        }
+    }
+
     enum Periode: String, CaseIterable, Identifiable {
         case maand
         case jaar
@@ -174,6 +186,7 @@ struct HomescreenView: View {
         var opzegbaar: Bool = true
         var notitie: String? = nil
         var zonderVervaldag: Bool = false
+        var accountWebsite: String? = nil
     }
     @State private var draft = Draft()
     // Tekstveld voor prijs met placeholder (voorkomt standaard "0")
@@ -203,17 +216,24 @@ struct HomescreenView: View {
 
     // MARK: - Persistence helpers (AppStorage <-> in-memory)
     private func loadAbonnementen() {
+        // Prefer iCloud data if it's newer than local
+        if let cloudData = iCloudSyncManager.shared.newerCloudData(forKey: "abonnementenData"),
+           let cloudArr = try? JSONDecoder().decode([Abonnement].self, from: cloudData), !cloudArr.isEmpty {
+            abonnementen = cloudArr
+            abonnementenData = cloudData
+            return
+        }
         if let arr = try? JSONDecoder().decode([Abonnement].self, from: abonnementenData), !arr.isEmpty {
             abonnementen = arr
         } else {
-            // Fresh start: no seed data for real users
             abonnementen = []
         }
     }
-    
+
     private func saveAbonnementen() {
         if let data = try? JSONEncoder().encode(abonnementen) {
             abonnementenData = data
+            iCloudSyncManager.shared.save(data, forKey: "abonnementenData")
         }
     }
     
@@ -281,7 +301,7 @@ struct HomescreenView: View {
                 if !dismissedSwipeHint { swipeHintSection }
                 if !dismissedInfoHint { infoHintSection }
                 if needsPayInUpcomingCount > 0 { payHintSection }
-                headerKPISection
+                heroSection
                 if !binnenkortLeeg {
                     upcomingSection
                 }
@@ -317,6 +337,9 @@ struct HomescreenView: View {
             .onReceive(NotificationCenter.default.publisher(for: .abboDataDidChange)) { _ in
                 loadAbonnementen()
                 autoMarkDueAsPaidIfEnabled()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .iCloudDataDidChange)) { _ in
+                loadAbonnementen()
             }
 #if canImport(UIKit)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
@@ -375,6 +398,10 @@ struct HomescreenView: View {
                                 }
                             Toggle("Opzegbaar", isOn: $draft.opzegbaar)
                             TextField("Notitie (optioneel)", text: $draft.notitie.orEmpty(), prompt: Text("Extra info (bv. plan, kortingscode)…"))
+                            TextField("Website / opzeglink", text: $draft.accountWebsite.orEmpty(), prompt: Text("https://..."))
+                                .keyboardType(.URL)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
                         } header: {
                             Text("Details").foregroundStyle(Theme.primary)
                         } footer: {
@@ -455,153 +482,415 @@ struct HomescreenView: View {
         }
     }
     private var payHintSection: some View {
-        Section {
-            HStack(alignment: .top, spacing: 10) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.title3)
-                    .foregroundStyle(Theme.primary)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Vergeet niet te betalen")
-                        .font(.headline)
-                        .foregroundStyle(Theme.primary)
-                    Text(needsPayInUpcomingCount == 1 ? "Er staat 1 abonnement met vervaldatum vandaag of eerder. Markeer het als ‘Betaald’ wanneer je betaald hebt." : "Er staan \(needsPayInUpcomingCount) abonnementen met vervaldatum vandaag of eerder. Markeer ze als ‘Betaald’ wanneer je betaald hebt.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 4)
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 13, weight: .bold))
+            Text(needsPayInUpcomingCount == 1 ? "1 abonnement te betalen vandaag of eerder" : "\(needsPayInUpcomingCount) abonnementen te betalen vandaag of eerder")
+                .font(.system(size: 11, weight: .bold))
+            Spacer()
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .foregroundStyle(.white)
+        .background(Color.red.opacity(0.85))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
 
-    private var headerKPISection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Picker("Periode", selection: $periode) {
-                        ForEach(Periode.allCases) { p in Text(p.localized).tag(p) }
-                    }
-                    .pickerStyle(.segmented)
-                    .tint(Theme.primary)
-                }
+    private func gradientForSubscription(_ abo: Abonnement) -> LinearGradient {
+        let name = abo.naam.lowercased()
+        
+        let brandColors: [Color]? = {
+            if name.contains("netflix") {
+                return [Color(red: 0.74, green: 0.05, blue: 0.04), Color(red: 0.09, green: 0.09, blue: 0.09)]
+            } else if name.contains("spotify") {
+                return [Color(red: 0.12, green: 0.84, blue: 0.38), Color(red: 0.08, green: 0.10, blue: 0.09)]
+            } else if name.contains("apple") || name.contains("icloud") || name.contains("arcade") || name.contains("tv+") {
+                return [Color(red: 0.55, green: 0.25, blue: 0.85), Color(red: 0.25, green: 0.45, blue: 0.95)]
+            } else if name.contains("youtube") || name.contains("google") || name.contains("drive") {
+                return [Color(red: 0.90, green: 0.13, blue: 0.13), Color(red: 0.96, green: 0.40, blue: 0.20)]
+            } else if name.contains("disney") {
+                return [Color(red: 0.05, green: 0.12, blue: 0.31), Color(red: 0.12, green: 0.35, blue: 0.75)]
+            } else if name.contains("prime") || name.contains("amazon") {
+                return [Color(red: 0.00, green: 0.64, blue: 0.88), Color(red: 0.08, green: 0.15, blue: 0.28)]
+            } else if name.contains("chatgpt") || name.contains("openai") {
+                return [Color(red: 0.06, green: 0.48, blue: 0.40), Color(red: 0.09, green: 0.10, blue: 0.15)]
+            } else if name.contains("github") {
+                return [Color(red: 0.15, green: 0.15, blue: 0.18), Color(red: 0.05, green: 0.05, blue: 0.06)]
+            } else if name.contains("adobe") || name.contains("creative cloud") {
+                return [Color(red: 0.98, green: 0.00, blue: 0.00), Color(red: 0.50, green: 0.00, blue: 0.60)]
+            } else if name.contains("microsoft") || name.contains("office") || name.contains("xbox") {
+                return [Color(red: 0.00, green: 0.48, blue: 0.85), Color(red: 0.24, green: 0.70, blue: 0.18)]
+            } else if name.contains("playstation") || name.contains("psn") || name.contains("plus") {
+                return [Color(red: 0.00, green: 0.18, blue: 0.65), Color(red: 0.02, green: 0.45, blue: 0.85)]
+            }
+            return nil
+        }()
+        
+        if let brandColors = brandColors {
+            return LinearGradient(colors: brandColors, startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+        
+        let gradients: [[Color]] = [
+            [Color(red: 0.08, green: 0.18, blue: 0.36), Color(red: 0.12, green: 0.45, blue: 0.53)], // Midnight Blue
+            [Color(red: 0.31, green: 0.18, blue: 0.54), Color(red: 0.58, green: 0.40, blue: 0.85)], // Purple
+            [Color(red: 0.08, green: 0.34, blue: 0.22), Color(red: 0.24, green: 0.65, blue: 0.47)], // Green
+            [Color(red: 0.65, green: 0.08, blue: 0.18), Color(red: 0.88, green: 0.29, blue: 0.42)], // Crimson
+            [Color(red: 0.95, green: 0.36, blue: 0.46), Color(red: 0.97, green: 0.62, blue: 0.40)], // Coral
+            [Color(red: 0.15, green: 0.17, blue: 0.22), Color(red: 0.38, green: 0.42, blue: 0.48)], // Charcoal
+            [Color(red: 0.85, green: 0.11, blue: 0.50), Color(red: 0.28, green: 0.12, blue: 0.73)], // Neon Pink
+            [Color(red: 0.07, green: 0.45, blue: 0.51), Color(red: 0.18, green: 0.75, blue: 0.56)], // Ocean Teal
+            [Color(red: 0.46, green: 0.32, blue: 0.08), Color(red: 0.78, green: 0.64, blue: 0.35)]  // Gold
+        ]
+        let hash = abs(abo.naam.hashValue)
+        let colors = gradients[hash % gradients.count]
+        return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-                HStack(spacing: 12) {
-                    kpiTile(title: NSLocalizedString("KPI_TOTAL", comment: "KPI title: Total"), value: totaalGeformatteerd)
-                    kpiTile(title: NSLocalizedString("KPI_SUBSCRIPTIONS", comment: "KPI title: Subscriptions count"), value: "\(gefilterdeAbos.count)")
+    private var heroSection: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 16) {
+                // Left Side: Total Amount details
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("TOTAAL OVERZICHT")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.6))
+                    
+                    Text(totaalGeformatteerd)
+                        .font(.system(size: 28, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                        .minimumScaleFactor(0.8)
+                        .lineLimit(1)
+                    
+                    HStack(spacing: 6) {
+                        Text("\(abonnementen.count) actief")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.8))
+                        
+                        if needsPayCount > 0 {
+                            Text("•")
+                                .foregroundStyle(.white.opacity(0.5))
+                            Text("\(needsPayCount) actie")
+                                .font(.system(size: 10, weight: .black))
+                                .foregroundStyle(Color.red)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 1.5)
+                                .background(Color.white, in: Capsule())
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                // Right Side: Period Selector & Icon
+                VStack(alignment: .trailing, spacing: 10) {
+                    HStack(spacing: 2) {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                periode = .maand
+                            }
+                        } label: {
+                            Text("Maand")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(periode == .maand ? Theme.primary : .white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(periode == .maand ? Color.white : Color.clear, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                periode = .jaar
+                            }
+                        } label: {
+                            Text("Jaar")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(periode == .jaar ? Theme.primary : .white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(periode == .jaar ? Color.white : Color.clear, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(2)
+                    .background(Color.black.opacity(0.15), in: Capsule())
+                    
+                    Image(systemName: "wallet.pass.fill")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.white.opacity(0.6))
                 }
             }
-            .padding(.vertical, 4)
+            .padding(14)
+            .background(
+                LinearGradient(
+                    colors: [Theme.primary, Theme.primary.opacity(0.75)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: Theme.primary.opacity(0.25), radius: 6, x: 0, y: 3)
+            .padding(.horizontal, 16)
         }
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+        .padding(.vertical, 4)
     }
 
     private var upcomingSection: some View {
-        Section {
-            ForEach(binnenkortAbos) { abo in
-                aboRowUpcoming(abo)   // <-- nieuwe layout
-                    .swipeActions(edge: .trailing) {
-                        Button { markeerBetaald(abo) } label: { Label("Betaald", systemImage: "checkmark.circle") }
-                    }
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Binnenkort te betalen")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Text("\(binnenkortAbos.count) items")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-        } header: {
-            Text("Binnenkort te betalen")
-        } footer: {
-            Text("Tip: veeg naar links op een abonnement om **Betaald** te markeren.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            .padding(.horizontal, 16)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(binnenkortAbos) { abo in
+                        upcomingCard(abo)
+                            .contentShape(Rectangle())
+                            .onTapGesture { openEdit(abo) }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+            }
         }
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
 
     private var volledigeLijstSection: some View {
         Section {
-            ForEach(gefilterdeAbos) { abo in
-                aboRow(abo)
-                    .contentShape(Rectangle())
-                    .onTapGesture { openEdit(abo) }
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            pendingDelete = abo
-                            showDeleteAlert = true
-                        } label: { Label("Verwijder", systemImage: "trash") }
-                        Button { openEdit(abo) } label: { Label("Bewerk", systemImage: "pencil") }
-                    }
+            if abonnementen.isEmpty && zoektekst.isEmpty {
+                emptyStateView
+            } else if gefilterdeAbos.isEmpty {
+                HStack {
+                    Spacer()
+                    Text("Geen resultaten voor '\(zoektekst)'")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 8)
+                .listRowBackground(Color.clear)
+            } else {
+                ForEach(gefilterdeAbos) { abo in
+                    aboCard(abo)
+                        .contentShape(Rectangle())
+                        .onTapGesture { openEdit(abo) }
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .listRowSeparator(.hidden)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                pendingDelete = abo
+                                showDeleteAlert = true
+                            } label: { Label("Verwijder", systemImage: "trash") }
+                            Button { openEdit(abo) } label: { Label("Bewerk", systemImage: "pencil") }
+                        }
+                }
             }
         } header: {
             Text("Alle abonnementen")
         } footer: {
-            Text("Tip: veeg naar links op een abonnement om **Betaald** te markeren, of om **Bewerk**/**Verwijder** te tonen.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            if !abonnementen.isEmpty {
+                Text("Tip: veeg naar links op een kaart om opties te tonen.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
+    }
+
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "creditcard.fill")
+                .font(.system(size: 56))
+                .foregroundStyle(Theme.primary.opacity(0.25))
+            VStack(spacing: 8) {
+                Text("Nog geen abonnementen")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                Text("Voeg je eerste abonnement toe\nen krijg inzicht in je kosten.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            Button { openAdd() } label: {
+                Label("Voeg toe", systemImage: "plus")
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Theme.primary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets())
     }
 
     // MARK: - Rows & Tiles
-    private func aboRow(_ abo: Abonnement) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: abo.iconSymbol)
-                .font(.title3)
-                .foregroundStyle(Theme.primary)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Text(abo.naam).font(.headline)
-                    if abo.opzegbaar {
-                        Text("Opzegbaar")
-                            .font(.caption2)
-                            .foregroundStyle(Theme.primary)
-                            .padding(.horizontal, 6).padding(.vertical, 2)
-                            .background(Theme.primary.opacity(0.12), in: Capsule())
+    private func aboCard(_ abo: Abonnement) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top) {
+                HStack(spacing: 10) {
+                    ZStack {
+                        Circle()
+                            .fill(.white.opacity(0.2))
+                            .frame(width: 38, height: 38)
+                        Image(systemName: abo.iconSymbol)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(abo.naam)
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
+                        Text(abo.categorie.capitalized)
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.7))
                     }
                 }
-                Text(abo.categorie.capitalized).font(.subheadline).foregroundStyle(.secondary)
-                Text(vervaldatumTekst(abo.volgendeVervaldatum)).font(.caption).foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 6) {
+                    Text(frequentieTekst(abo.frequentie))
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.white.opacity(0.18), in: Capsule())
+                        
+                    if abo.opzegbaar {
+                        Text("Opzegbaar")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.3), in: Capsule())
+                    }
+                }
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 6) {
-                Text(bedragTekst(abo)).font(.headline).foregroundStyle(Theme.primary)
-                Text(frequentieTekst(abo.frequentie)).font(.caption).foregroundStyle(.secondary)
+            
+            Spacer(minLength: 8)
+            
+            HStack(alignment: .bottom) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("VOLGENDE BETALING")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.5))
+                    Text(vervaldatumTekst(abo.volgendeVervaldatum))
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(bedragTekst(abo))
+                        .font(.system(size: 24, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                    if abo.frequentie != .jaarlijks {
+                        Text(currency(abo.jaarBedrag) + "/jr")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                }
             }
         }
-        .padding(.vertical, 4)
+        .padding(18)
+        .background(gradientForSubscription(abo))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
     }
     
-    // Specifieke rij-opmaak voor "Binnenkort te betalen":
-    // bedrag helemaal rechts, met daaronder de vervaldatum.
-    private func aboRowUpcoming(_ abo: Abonnement) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: abo.iconSymbol)
-                .font(.title3)
-                .foregroundStyle(Theme.primary)
-                .frame(width: 28)
-
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Text(abo.naam).font(.headline)
-                    if abo.opzegbaar {
-                        Text("Opzegbaar")
-                            .font(.caption2)
-                            .foregroundStyle(Theme.primary)
-                            .padding(.horizontal, 6).padding(.vertical, 2)
-                            .background(Theme.primary.opacity(0.12), in: Capsule())
-                    }
+    private func upcomingCard(_ abo: Abonnement) -> some View {
+        let days = daysUntil(abo.volgendeVervaldatum)
+        
+        return VStack(alignment: .leading, spacing: 0) {
+            // Top Row: Icon and Days badge
+            HStack(alignment: .top) {
+                ZStack {
+                    Circle()
+                        .fill(.white.opacity(0.2))
+                        .frame(width: 32, height: 32)
+                    Image(systemName: abo.iconSymbol)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.white)
                 }
-                Text(abo.categorie.capitalized)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Text(days == 0 ? "Vandaag" : (days == 1 ? "Morgen" : "In \(days) dg"))
+                    .font(.system(size: 9, weight: .black))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(days == 0 ? Color.red.opacity(0.85) : .white.opacity(0.2), in: Capsule())
             }
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 6) {
+            
+            Spacer(minLength: 12)
+            
+            // Middle: Name
+            Text(abo.naam)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                
+            // Subtitle: relative date details or frequency
+            Text(frequentieTekst(abo.frequentie).lowercased())
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.white.opacity(0.7))
+            
+            Spacer(minLength: 16)
+            
+            // Bottom: Price and Checkmark action
+            HStack(alignment: .bottom) {
                 Text(bedragTekst(abo))
-                    .font(.headline)
-                    .foregroundStyle(Theme.primary)
-                Text(upcomingDateLabel(abo.volgendeVervaldatum))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 18, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                
+                Spacer()
+                
+                Button {
+                    markeerBetaald(abo)
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 28, height: 28)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(days == 0 ? Color.red : Theme.primary)
+                    }
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                }
+                .buttonStyle(.plain)
             }
         }
-        .padding(.vertical, 4)
+        .padding(14)
+        .frame(width: 155, height: 145)
+        .background(gradientForSubscription(abo))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
     }
-
+    
     private func kpiTile(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title).font(.caption).foregroundStyle(.secondary)
@@ -610,8 +899,8 @@ struct HomescreenView: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(Theme.primary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.6) // verklein bij kleinere schermen/grote bedragen
-                .allowsTightening(true)  // knijp spaties zodat het op één regel past
+                .minimumScaleFactor(0.6)
+                .allowsTightening(true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -624,6 +913,7 @@ struct HomescreenView: View {
                 .stroke(Theme.primary.opacity(0.15))
         )
     }
+
 
     // MARK: - Helpers
     private var gefilterdeAbos: [Abonnement] {
@@ -640,6 +930,20 @@ struct HomescreenView: View {
     }
 
     private var binnenkortLeeg: Bool { binnenkortAbos.isEmpty }
+
+    private var timelineItems: [TimelineItem] {
+        var items: [TimelineItem] = []
+        var lastDay: Date? = nil
+        for abo in binnenkortAbos {
+            let day = Calendar.current.startOfDay(for: abo.volgendeVervaldatum)
+            if lastDay != day {
+                items.append(.dateHeader(day))
+                lastDay = day
+            }
+            items.append(.subscription(abo))
+        }
+        return items
+    }
 
     private var totaal: Double {
         switch periode {
@@ -722,7 +1026,8 @@ struct HomescreenView: View {
             categorieIcon: abo.categorieIcon,
             opzegbaar: abo.opzegbaar,
             notitie: abo.notitie,
-            zonderVervaldag: Calendar.current.component(.day, from: abo.volgendeVervaldatum) == 1
+            zonderVervaldag: Calendar.current.component(.day, from: abo.volgendeVervaldatum) == 1,
+            accountWebsite: abo.accountWebsite
         )
         prijsText = plainNumberString(abo.prijs)
         isPresentingAddEdit = true
@@ -741,7 +1046,8 @@ struct HomescreenView: View {
             categorie: draft.categorie.trimmingCharacters(in: .whitespacesAndNewlines),
             categorieIcon: draft.categorieIcon,
             opzegbaar: draft.opzegbaar,
-            notitie: draft.notitie
+            notitie: draft.notitie,
+            accountWebsite: draft.accountWebsite
         )
         // Als de opgegeven vervaldatum in het verleden ligt, schuif door naar de eerstvolgende periode
         let todayStart = Calendar.current.startOfDay(for: Date())
@@ -779,7 +1085,8 @@ struct HomescreenView: View {
                 categorie: updated.categorie,
                 categorieIcon: updated.categorieIcon,
                 opzegbaar: updated.opzegbaar,
-                notitie: updated.notitie
+                notitie: updated.notitie,
+                accountWebsite: updated.accountWebsite
             )
             // replace in place while keeping array order
             abonnementen.remove(at: idx)

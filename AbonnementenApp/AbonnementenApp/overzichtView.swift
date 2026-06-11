@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct overzichtView: View {
 
@@ -31,6 +32,9 @@ struct overzichtView: View {
     var body: some View {
         NavigationStack {
             List {
+                if gekozenCategorie == "All" && !abonnementen.isEmpty {
+                    inzichtenSection
+                }
                 filterHeader
                 if gekozenCategorie == "All" {
                     // Toon All categorieën met subtotaal per categorie
@@ -78,6 +82,106 @@ struct overzichtView: View {
         }
     }
 
+    // MARK: - Inzichten
+
+    private struct CategorieSpending: Identifiable {
+        var id: String { categorie }
+        let categorie: String
+        let bedrag: Double
+    }
+
+    private var categorieSpending: [CategorieSpending] {
+        let cats = Set(abonnementen.map { $0.categorie })
+        return cats.map { cat in
+            let total = abonnementen.filter { $0.categorie == cat }
+                .map { periodeIsJaar ? $0.jaarBedrag : $0.maandBedrag }
+                .reduce(0, +)
+            return CategorieSpending(categorie: cat, bedrag: total)
+        }
+        .filter { $0.bedrag > 0 }
+        .sorted { $0.bedrag > $1.bedrag }
+    }
+
+    private var duursteAbonnement: Abonnement? {
+        abonnementen.max { $0.maandBedrag < $1.maandBedrag }
+    }
+
+    private var inzichtenSection: some View {
+        Section(header: Text("Inzichten")) {
+            // Bar chart per categorie
+            if !categorieSpending.isEmpty {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text(periodeIsJaar ? "Verdeling per categorie (jaar)" : "Verdeling per categorie (maand)")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 2)
+                    
+                    let maxSpending = categorieSpending.map { $0.bedrag }.max() ?? 1.0
+                    
+                    ForEach(categorieSpending) { item in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Label(item.categorie, systemImage: CategoryIcon.symbol(for: item.categorie))
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Text(currency(item.bedrag))
+                                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Theme.primary)
+                            }
+                            
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                        .fill(Theme.primary.opacity(0.1))
+                                        .frame(height: 6)
+                                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                        .fill(Theme.primary.gradient)
+                                        .frame(width: geo.size.width * CGFloat(item.bedrag / maxSpending), height: 6)
+                                }
+                            }
+                            .frame(height: 6)
+                        }
+                        .padding(.bottom, 4)
+                    }
+                }
+                .padding(.vertical, 6)
+            }
+
+            // Duurste abonnement
+            if let top = duursteAbonnement {
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Theme.primary.opacity(0.1))
+                            .frame(width: 40, height: 40)
+                        Image(systemName: top.iconSymbol)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Theme.primary)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("DUURSTE ABONNEMENT")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.secondary)
+                        Text(top.naam)
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.primary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(currency(top.maandBedrag))
+                            .font(.system(size: 15, weight: .black, design: .rounded))
+                            .foregroundStyle(Theme.primary)
+                        Text("p/m")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 6)
+            }
+        }
+    }
+
     // MARK: - Header (filters)
     private var filterHeader: some View {
         Section {
@@ -112,25 +216,46 @@ struct overzichtView: View {
     }
 
     private func aboRow(_ abo: Abonnement) -> some View {
-        HStack {
-            Image(systemName: abo.iconSymbol)
-                .font(.title3)
-                .foregroundStyle(Theme.primary)
-                .frame(width: 28)
-            VStack(alignment: .leading) {
-                Text(abo.naam).font(.body)
-                Text(frequentieTekst(abo.frequentie)).font(.caption).foregroundStyle(.secondary)
+        let aboBedrag = periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag
+        let totaal = totaalHuidigeSelectie
+        let progress = totaal > 0 ? aboBedrag / totaal : 0
+        let bedragTekst = currency(aboBedrag)
+
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Theme.primary.opacity(0.13))
+                        .frame(width: 36, height: 36)
+                    Image(systemName: abo.iconSymbol)
+                        .font(.system(size: 16))
+                        .foregroundStyle(Theme.primary)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(abo.naam).font(.body)
+                    Text(frequentieTekst(abo.frequentie)).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text(periodeIsJaar
+                     ? String(format: NSLocalizedString("LABEL_YEARLY_AMOUNT",
+                                                        comment: "Label prefix for yearly amount"),
+                              bedragTekst)
+                     : bedragTekst)
+                    .font(.body)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Theme.primary)
             }
-            Spacer()
-            let bedrag = currency(periodeIsJaar ? abo.jaarBedrag : abo.maandBedrag)
-            Text(periodeIsJaar
-                 ? String(format: NSLocalizedString("LABEL_YEARLY_AMOUNT",
-                                                    comment: "Label prefix for yearly amount"),
-                          bedrag)
-                 : bedrag)
-                .font(.body)
-                .fontWeight(.semibold)
-                .foregroundStyle(Theme.primary)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .fill(Theme.primary.opacity(0.1))
+                        .frame(height: 5)
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .fill(Theme.primary.opacity(0.6))
+                        .frame(width: geo.size.width * min(progress, 1), height: 5)
+                }
+            }
+            .frame(height: 5)
         }
         .padding(.vertical, 4)
     }

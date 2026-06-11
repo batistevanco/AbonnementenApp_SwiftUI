@@ -11,6 +11,21 @@
         }
       }
     },
+    "%lld abonnementen te betalen vandaag of eerder" : {
+
+    },
+    "%lld actie" : {
+
+    },
+    "%lld actief" : {
+
+    },
+    "%lld items" : {
+
+    },
+    "•" : {
+
+    },
     "⚠️ Betaal‑herinnering banner" : {
       "localizations" : {
         "en" : {
@@ -120,6 +135,9 @@
           }
         }
       }
+    },
+    "1 abonnement te betalen vandaag of eerder" : {
+
     },
     "1 week" : {
       "localizations" : {
@@ -659,6 +677,7 @@
       }
     },
     "Assistent" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -719,6 +738,7 @@
       }
     },
     "Betaald" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -946,6 +966,9 @@
         }
       }
     },
+    "DUURSTE ABONNEMENT" : {
+
+    },
     "E-mail" : {
       "localizations" : {
         "en" : {
@@ -977,6 +1000,7 @@
       }
     },
     "Er staan %lld abonnementen met vervaldatum vandaag of eerder. Markeer ze als ‘Betaald’ wanneer je betaald hebt." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -987,6 +1011,7 @@
       }
     },
     "Er staat 1 abonnement met vervaldatum vandaag of eerder. Markeer het als ‘Betaald’ wanneer je betaald hebt." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1012,6 +1037,12 @@
           }
         }
       }
+    },
+    "Exporteer overzicht als PDF" : {
+
+    },
+    "Exporteren" : {
+
     },
     "Extra" : {
       "localizations" : {
@@ -1161,6 +1192,9 @@
         }
       }
     },
+    "Geen resultaten voor '%@'" : {
+
+    },
     "Gekopieerd!" : {
       "localizations" : {
         "en" : {
@@ -1180,6 +1214,9 @@
           }
         }
       }
+    },
+    "Genereert een PDF met al je abonnementen, maand- en jaartotalen." : {
+
     },
     "Gereed" : {
       "localizations" : {
@@ -1248,6 +1285,9 @@
         }
       }
     },
+    "https://..." : {
+
+    },
     "Icoon" : {
       "localizations" : {
         "en" : {
@@ -1257,6 +1297,9 @@
           }
         }
       }
+    },
+    "In %lld dg" : {
+
     },
     "Info" : {
       "localizations" : {
@@ -1277,6 +1320,12 @@
           }
         }
       }
+    },
+    "Inzichten" : {
+
+    },
+    "Jaar" : {
+
     },
     "Jaarlijks" : {
       "localizations" : {
@@ -1687,6 +1736,9 @@
         }
       }
     },
+    "Maand" : {
+
+    },
     "Maandelijks" : {
       "localizations" : {
         "en" : {
@@ -1788,6 +1840,9 @@
         }
       }
     },
+    "Morgen" : {
+
+    },
     "Naam" : {
       "localizations" : {
         "en" : {
@@ -1827,6 +1882,9 @@
           }
         }
       }
+    },
+    "Nog geen abonnementen" : {
+
     },
     "Nog geen categorieën. Voeg er hieronder één toe." : {
       "localizations" : {
@@ -1990,6 +2048,9 @@
         }
       }
     },
+    "p/m" : {
+
+    },
     "PER_MONTH" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2059,6 +2120,7 @@
       }
     },
     "Periode" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2396,6 +2458,7 @@
       }
     },
     "Tip: veeg naar links op een abonnement om **Betaald** te markeren, of om **Bewerk**/**Verwijder** te tonen." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2412,6 +2475,7 @@
       }
     },
     "Tip: veeg naar links op een abonnement om **Betaald** te markeren." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2420,6 +2484,9 @@
           }
         }
       }
+    },
+    "Tip: veeg naar links op een kaart om opties te tonen." : {
+
     },
     "Toevoegen" : {
       "localizations" : {
@@ -2440,6 +2507,9 @@
           }
         }
       }
+    },
+    "TOTAAL OVERZICHT" : {
+
     },
     "TOTAL_MONTH" : {
       "extractionState" : "manual",
@@ -2537,6 +2607,9 @@
         }
       }
     },
+    "Vandaag" : {
+
+    },
     "Veeg een abonnement naar links om **Verwijder** of **Bewerk/Betaald** te tonen." : {
       "localizations" : {
         "en" : {
@@ -2557,7 +2630,14 @@
         }
       }
     },
+    "Verdeling per categorie (jaar)" : {
+
+    },
+    "Verdeling per categorie (maand)" : {
+
+    },
     "Vergeet niet te betalen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2587,6 +2667,9 @@
         }
       }
     },
+    "Voeg je eerste abonnement toe\nen krijg inzicht in je kosten." : {
+
+    },
     "Voeg toe" : {
       "localizations" : {
         "en" : {
@@ -2606,6 +2689,9 @@
           }
         }
       }
+    },
+    "VOLGENDE BETALING" : {
+
     },
     "Volgende vervaldatum" : {
       "localizations" : {
@@ -2636,6 +2722,9 @@
           }
         }
       }
+    },
+    "Website / opzeglink" : {
+
     },
     "Website of portaal" : {
       "localizations" : {

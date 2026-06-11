@@ -32,9 +32,6 @@ struct ContentView: View {
                     Image(systemName: "book.pages.fill")
                     Text("Dagboek")
                 }
-
-            AIChatView(toolbox: AbboToolboxImpl())
-                .tabItem { Label("Assistent", systemImage: "sparkles") }
         }
         .preferredColorScheme(preferredScheme)
         .onAppear {
