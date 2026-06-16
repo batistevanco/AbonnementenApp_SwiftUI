@@ -64,10 +64,6 @@ struct instellingenView: View {
     @State private var mailFallbackFailed: Bool = false
     @Environment(\.openURL) private var openURL
 
-    @AppStorage("abonnementenData") private var abonnementenData: Data = Data()
-    @State private var pdfURL: URL? = nil
-    @State private var showingPDFShare: Bool = false
-
     private let leadTimeOptions: [(label: String, days: Int)] = [
         (NSLocalizedString("LEADTIME_SAME_DAY", comment: "Same day"), 0),
         (NSLocalizedString("LEADTIME_1_DAY", comment: "1 day before"), 1),
@@ -248,19 +244,6 @@ struct instellingenView: View {
                 Text("Standaardcategorieën zijn: \(CategoriesDefaults.fallback.joined(separator: ", ")). Je kunt deze lijst vrij aanpassen.")
             }
             
-            Section {
-                Button {
-                    exportPDF()
-                } label: {
-                    Label("Exporteer overzicht als PDF", systemImage: "square.and.arrow.up")
-                }
-                .tint(Theme.primary)
-            } header: {
-                Text("Exporteren")
-            } footer: {
-                Text("Genereert een PDF met al je abonnementen, maand- en jaartotalen.")
-            }
-
             Section {
                 HStack {
                     Text("App naam")
@@ -472,114 +455,6 @@ struct instellingenView: View {
         } message: {
             Text("Kopieer en mail ons op support@vancoilliestudio.be.")
         }
-        .sheet(isPresented: $showingPDFShare) {
-            if let url = pdfURL {
-                ShareSheet(items: [url])
-            }
-        }
-    }
-
-    // MARK: - PDF Export
-    private func exportPDF() {
-        let abonnementen = (try? JSONDecoder().decode([Abonnement].self, from: abonnementenData)) ?? []
-        let url = generatePDF(abonnementen: abonnementen, currencyCode: currencyCode)
-        pdfURL = url
-        showingPDFShare = true
-    }
-
-    private func generatePDF(abonnementen: [Abonnement], currencyCode: String) -> URL {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currencyCode
-        formatter.locale = Locale.current
-        func fmt(_ v: Double) -> String {
-            (formatter.string(from: NSNumber(value: v)) ?? "\(v)").replacingOccurrences(of: " ", with: "\u{00A0}")
-        }
-
-        let maandTotaal = abonnementen.map { $0.maandBedrag }.reduce(0, +)
-        let jaarTotaal = abonnementen.map { $0.jaarBedrag }.reduce(0, +)
-        let sorted = abonnementen.sorted { $0.naam.localizedCaseInsensitiveCompare($1.naam) == .orderedAscending }
-
-        let pageWidth: CGFloat = 595
-        let pageHeight: CGFloat = 842
-        let margin: CGFloat = 50
-        let rowH: CGFloat = 22
-        let headerH: CGFloat = 100
-
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("AbboBuddy-overzicht.pdf")
-        UIGraphicsBeginPDFContextToFile(url.path, CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight), nil)
-
-        var yOffset: CGFloat = margin
-
-        func newPage() {
-            UIGraphicsBeginPDFPage()
-            yOffset = margin
-        }
-
-        func drawText(_ text: String, at y: CGFloat, x: CGFloat = margin, font: UIFont, color: UIColor = .label, rightAlign: Bool = false) {
-            let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
-            let size = (text as NSString).boundingRect(with: CGSize(width: pageWidth - margin * 2, height: 999),
-                                                        options: .usesLineFragmentOrigin,
-                                                        attributes: attrs, context: nil).size
-            let xPos = rightAlign ? (pageWidth - margin - size.width) : x
-            (text as NSString).draw(at: CGPoint(x: xPos, y: y), withAttributes: attrs)
-        }
-
-        newPage()
-
-        // Title
-        drawText("AbboBuddy – Abonnementenoverzicht", at: yOffset, font: .boldSystemFont(ofSize: 20), color: .systemIndigo)
-        yOffset += 30
-        let dateStr = DateFormatter.localizedString(from: Date(), dateStyle: .long, timeStyle: .none)
-        drawText(dateStr, at: yOffset, font: .systemFont(ofSize: 12), color: .secondaryLabel)
-        yOffset += 40
-
-        // Totals box
-        drawText("Maandelijks totaal:", at: yOffset, font: .boldSystemFont(ofSize: 13))
-        drawText(fmt(maandTotaal), at: yOffset, font: .boldSystemFont(ofSize: 13), color: .systemIndigo, rightAlign: true)
-        yOffset += rowH
-        drawText("Jaarlijks totaal:", at: yOffset, font: .boldSystemFont(ofSize: 13))
-        drawText(fmt(jaarTotaal), at: yOffset, font: .boldSystemFont(ofSize: 13), color: .systemIndigo, rightAlign: true)
-        yOffset += 36
-
-        // Column headers
-        let colFont = UIFont.boldSystemFont(ofSize: 11)
-        drawText("Naam", at: yOffset, font: colFont, color: .secondaryLabel)
-        drawText("Categorie", at: yOffset, x: margin + 160, font: colFont, color: .secondaryLabel)
-        drawText("Frequentie", at: yOffset, x: margin + 300, font: colFont, color: .secondaryLabel)
-        drawText("Maand", at: yOffset, font: colFont, color: .secondaryLabel, rightAlign: true)
-        yOffset += rowH
-
-        // Divider
-        let ctx = UIGraphicsGetCurrentContext()
-        ctx?.setStrokeColor(UIColor.separator.cgColor)
-        ctx?.move(to: CGPoint(x: margin, y: yOffset))
-        ctx?.addLine(to: CGPoint(x: pageWidth - margin, y: yOffset))
-        ctx?.strokePath()
-        yOffset += 8
-
-        // Rows
-        for abo in sorted {
-            if yOffset > pageHeight - margin - rowH {
-                newPage()
-            }
-            let rowFont = UIFont.systemFont(ofSize: 11)
-            drawText(abo.naam, at: yOffset, font: rowFont)
-            drawText(abo.categorie, at: yOffset, x: margin + 160, font: rowFont, color: .secondaryLabel)
-            let freqLabel: String
-            switch abo.frequentie {
-            case .wekelijks: freqLabel = "Wekelijks"
-            case .maandelijks: freqLabel = "Maandelijks"
-            case .driemaandelijks: freqLabel = "Per kwartaal"
-            case .jaarlijks: freqLabel = "Jaarlijks"
-            }
-            drawText(freqLabel, at: yOffset, x: margin + 300, font: rowFont, color: .secondaryLabel)
-            drawText(fmt(abo.maandBedrag), at: yOffset, font: rowFont, color: .label, rightAlign: true)
-            yOffset += rowH
-        }
-
-        UIGraphicsEndPDFContext()
-        return url
     }
 
     // MARK: - Keyboard
@@ -904,12 +779,3 @@ struct MailView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) { }
 }
 
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) { }
-}

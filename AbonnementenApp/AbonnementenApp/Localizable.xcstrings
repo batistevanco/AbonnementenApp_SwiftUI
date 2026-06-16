@@ -1038,12 +1038,6 @@
         }
       }
     },
-    "Exporteer overzicht als PDF" : {
-
-    },
-    "Exporteren" : {
-
-    },
     "Extra" : {
       "localizations" : {
         "en" : {
@@ -1214,9 +1208,6 @@
           }
         }
       }
-    },
-    "Genereert een PDF met al je abonnementen, maand- en jaartotalen." : {
-
     },
     "Gereed" : {
       "localizations" : {
